@@ -1,11 +1,15 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class SwerveModule {
@@ -23,7 +27,8 @@ public class SwerveModule {
     private double chassisAngularOffset;
     private Rotation2d angularOffset;
 
-    private SwerveModuleState desiredState = new SwerveModuleState(0.0, new Rotation2d());
+
+    private SwerveModuleState desiredState = new SwerveModuleState(0, new Rotation2d());
 
     public SwerveModule(int modNum, int driveCanID,int turnCanId, double chassisOffset, Rotation2d offset ){
         module_number = modNum;
@@ -35,8 +40,10 @@ public class SwerveModule {
 
         drivingMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.m_swerveDriveConfigs);
         turningMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.m_swerveTurnConfigs);
+        
 
-        rotationAnalogEncoder = new AnalogEncoder(0, 360, 0); //TODO get channel
+
+     //   rotationAnalogEncoder = new AnalogEncoder(0, 360, 0); //TODO get channel
 
     }
 
@@ -61,6 +68,20 @@ public class SwerveModule {
         correctedDesiredState.angle = desiredState.angle;
 
         correctedDesiredState.optimize(new Rotation2d(turningMotor.getPosition().getValueAsDouble()));
+
+        VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
+
+        drivingMotor.setControl(velocityRequest.withVelocity(correctedDesiredState.speedMetersPerSecond / 0.0508));
+
+        PositionVoltage positionRequest = new PositionVoltage(correctedDesiredState.angle.getRotations());
+
+        turningMotor.setControl(positionRequest.withPosition(correctedDesiredState.angle.getRotations()));
+
+
+        
+
+
+        this.desiredState = desiredState;
 
     }
 

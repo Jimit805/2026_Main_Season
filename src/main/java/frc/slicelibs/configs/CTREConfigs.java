@@ -8,7 +8,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 
 import frc.robot.Constants;
 
-import frc.robot.Constants;
 
 /** Add your docs here. */
 public class CTREConfigs {
