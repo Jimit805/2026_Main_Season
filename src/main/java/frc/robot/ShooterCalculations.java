@@ -99,6 +99,7 @@ public class ShooterCalculations {
         // TODO: Does Pose2d.getX() return metres?
         double[] robotXY = {Units.metersToFeet(robotPose.pose.getX()), Units.metersToFeet(robotPose.pose.getY())};
         double distance = Math.sqrt(Math.pow((robotXY[0] - hubXY[0]), 2) + Math.pow((robotXY[1] - hubXY[1]), 2)); // Pythagorean theorem to get distance
+        System.out.println("DISTANCE TO HUB: " + distance);
         //double distance = robotPose.avgTagDist + Constants.FieldConstants.HUB_HALF_LENGTH; // Get the distance to the tag plus the hub's length
         return distance;
     }
