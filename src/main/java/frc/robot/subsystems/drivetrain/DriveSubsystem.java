@@ -114,23 +114,27 @@ public class DriveSubsystem extends SubsystemBase {
   }
   public void setDutyCycle (double DrivePercent, double RotationPercent) {
     m_backRightModule.setDutyCycle(DrivePercent, RotationPercent);
-    m_backLeftModule.setDutyCycle(DrivePercent, RotationPercent);
-    m_frontRightModule.setDutyCycle(DrivePercent, RotationPercent);
-    m_frontLeftModule.setDutyCycle(DrivePercent, RotationPercent);
+   // m_backLeftModule.setDutyCycle(DrivePercent, RotationPercent);
+   // m_frontRightModule.setDutyCycle(DrivePercent, RotationPercent);
+   // m_frontLeftModule.setDutyCycle(DrivePercent, RotationPercent);
 
   }
 
 
   @Override
   public void periodic() {
-   // SmartDashboard.putNumber("Front Left Rotation : ", m_frontLeftModule.getTurnRotation());
-    //SmartDashboard.putNumber("Front Right Rotation : ", m_frontRightModule.getTurnRotation());
-   // SmartDashboard.putNumber("Back Left Rotation : ", m_backLeftModule.getTurnRotation());
-   // SmartDashboard.putNumber("Back Right Rotation : ", m_backRightModule.getTurnRotation());
-    SmartDashboard.putNumber( "Back Left ROT: " , m_backLeftModule.getSwerveModuleState().angle.getDegrees());
-    SmartDashboard.putNumber( "Back Right ROT: " , m_backRightModule.getSwerveModuleState().angle.getDegrees());
-    SmartDashboard.putNumber( "Front Right ROT: " , m_frontRightModule.getSwerveModuleState().angle.getDegrees());
-    SmartDashboard.putNumber( "Front Left ROT: " , m_frontLeftModule.getSwerveModuleState().angle.getDegrees());
+    SmartDashboard.putNumber("Front Left Rotation : ", m_frontLeftModule.getTurnRotation());
+    SmartDashboard.putNumber("Front Right Rotation : ", m_frontRightModule.getTurnRotation());
+    SmartDashboard.putNumber("Back Left Rotation : ", m_backLeftModule.getTurnRotation());
+    SmartDashboard.putNumber("Back Right Rotation : ", m_backRightModule.getTurnRotation());
+    SmartDashboard.putNumber("Front Left Encoder Val", m_frontLeftModule.getANYTHING());
+    SmartDashboard.putNumber("Back Left Encoder Val", m_backLeftModule.getANYTHING());
+    SmartDashboard.putNumber("Front Right Encoder Val", m_frontRightModule.getANYTHING());
+    SmartDashboard.putNumber("Back Right Encoder Val", m_backRightModule.getANYTHING());
+  //  SmartDashboard.putNumber( "Back Left ROT: " , m_backLeftModule.getSwerveModuleState().angle.getDegrees());
+  //  SmartDashboard.putNumber( "Back Right ROT: " , m_backRightModule.getSwerveModuleState().angle.getDegrees());
+   // SmartDashboard.putNumber( "Front Right ROT: " , m_frontRightModule.getSwerveModuleState().angle.getDegrees());
+   // SmartDashboard.putNumber( "Front Left ROT: " , m_frontLeftModule.getSwerveModuleState().angle.getDegrees());
 
 
     

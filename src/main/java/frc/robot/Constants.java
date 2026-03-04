@@ -54,27 +54,27 @@ public final class Constants {
 
     //Angular offsets of the wheels
     //TODO find actual angle offsets
-    public static final Rotation2d kFrontLeftAngulatOffset = Rotation2d.fromDegrees(13.59);
+    public static final Rotation2d kFrontLeftAngulatOffset = Rotation2d.fromDegrees(50/*13.59*/);
     public static final Rotation2d kFrontRightAngularOffset = Rotation2d.fromDegrees(342.31);
     public static final Rotation2d kRearLeftAngularOffset = Rotation2d.fromDegrees(113.34);
     public static final Rotation2d kRearRightAngularOffset = Rotation2d.fromDegrees(95.34);
 
     /* MOTOR IDS */
-    public static final int FRONT_LEFT_DRIVE_ID = 11;
-    public static final int FRONT_RIGHT_DRIVE_ID = 15;
-    public static final int BACK_LEFT_DRIVE_ID = 13;
-    public static final int BACK_RIGHT_DRIVE_ID = 17;
+    public static final int FRONT_LEFT_DRIVE_ID = 17;
+    public static final int FRONT_RIGHT_DRIVE_ID = 13;
+    public static final int BACK_LEFT_DRIVE_ID = 15;
+    public static final int BACK_RIGHT_DRIVE_ID = 11;
 
-    public static final int FRONT_LEFT_TURN_ID = 10;
-    public static final int FRONT_RIGHT_TURN_ID = 14;
-    public static final int BACK_LEFT_TURN_ID = 12;
-    public static final int BACK_RIGHT_TURN_ID = 16;
+    public static final int FRONT_LEFT_TURN_ID = 16;
+    public static final int FRONT_RIGHT_TURN_ID = 12;
+    public static final int BACK_LEFT_TURN_ID = 14;
+    public static final int BACK_RIGHT_TURN_ID = 10;
     
     /* Encoder IDs */
-    public static final int FRONT_LEFT_ENCODER_ID = 5;
-    public static final int FRONT_RIGHT_ENCODER_ID = 4;
-    public static final int BACK_LEFT_ENCODER_ID = 6;
-    public static final int BACK_RIGHT_ENCODER_ID = 7;
+    public static final int FRONT_LEFT_ENCODER_ID = 0;
+    public static final int FRONT_RIGHT_ENCODER_ID = 1;
+    public static final int BACK_LEFT_ENCODER_ID = 3;
+    public static final int BACK_RIGHT_ENCODER_ID = 2;
 
 
     //TODO: Figure out PIDs for both Drive Motors and Turn Motors

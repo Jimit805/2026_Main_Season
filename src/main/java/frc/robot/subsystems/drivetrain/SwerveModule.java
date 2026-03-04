@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -9,9 +10,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
@@ -26,7 +29,7 @@ public class SwerveModule {
     private TalonFX turningMotor;
 
     private AnalogEncoder rotationAnalogEncoder;
-    private Encoder integratedAnalogEncoder;
+    private Encoder integratedEncoder;
 
     private double chassisAngularOffset;
     private Rotation2d angularOffset;
@@ -45,11 +48,18 @@ public class SwerveModule {
 
         drivingMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.m_swerveDriveConfigs);
         turningMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.m_swerveTurnConfigs);
-
         
         rotationAnalogEncoder = new AnalogEncoder(encoderId, 360, 0); //TODO get channel
+        
+        // rotationAnalogEncoder = new AnalogEncoder(encoderId);
+        //turningMotor.setPosition(Math.abs(rotationAnalogEncoder.get() - (angularOffset.getDegrees())));
+        //turningMotor.setPosition(turningMotor.getPosition().getValueAsDouble() - angularOffset.getDegrees());
 
-        turningMotor.setPosition(turningMotor.getPosition().getValueAsDouble() - angularOffset.getDegrees());
+        PositionVoltage initial = new PositionVoltage(rotationAnalogEncoder.get() * 360 - angularOffset.getDegrees());
+
+        turningMotor.setControl(initial.withPosition(rotationAnalogEncoder.get() * 360 - angularOffset.getDegrees()));
+    
+        desiredState.angle = Rotation2d.fromRotations(rotationAnalogEncoder.get());
 
     }
 
@@ -94,8 +104,14 @@ public class SwerveModule {
     public double getTurnRotation(){
         return rotationAnalogEncoder.get();
     }
+    public double getANYTHING(){
+        return (Math.abs(rotationAnalogEncoder.get() - (angularOffset.getDegrees())));
+    }
     
     // TODO : add a RESET ENCODERS METHOD
+
+    public void resetEncoders(){
+    }
     
     /*
     @Override
