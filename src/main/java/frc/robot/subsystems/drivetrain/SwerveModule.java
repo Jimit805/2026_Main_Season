@@ -35,7 +35,6 @@ public class SwerveModule {
 
     private double chassisAngularOffset;
     private Rotation2d angularOffset;
-    private boolean inverted;
 
 
     private SwerveModuleState desiredState = new SwerveModuleState(0, new Rotation2d());
@@ -47,7 +46,6 @@ public class SwerveModule {
         angularOffset = offset;
         drivingMotor = new TalonFX(driveCanID);
         turningMotor = new TalonFX(turnCanId);
-        inverted = false;
 
       //  rotation  = new AnalogInput(encoderId);
 
@@ -55,7 +53,6 @@ public class SwerveModule {
         turningMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.m_swerveTurnConfigs);
 
         rotationAnalogEncoder = new AnalogEncoder(encoderId, 360, 0); //TODO get channel
-        rotationAnalogEncoder.setInverted(inverted);
         // rotationAnalogEncoder = new AnalogEncoder(encoderId);
         //turningMotor.setPosition(Math.abs(rotationAnalogEncoder.get() - (angularOffset.getDegrees())));
         //turningMotor.setPosition(turningMotor.getPosition().getValueAsDouble() - angularOffset.getDegrees());

@@ -54,10 +54,10 @@ public final class Constants {
 
     //Angular offsets of the wheels
     //TODO find actual angle offsets
-    public static final Rotation2d kFrontLeftAngulatOffset = Rotation2d.fromDegrees(50/*13.59*/);
-    public static final Rotation2d kFrontRightAngularOffset = Rotation2d.fromDegrees(342.31);
-    public static final Rotation2d kRearLeftAngularOffset = Rotation2d.fromDegrees(113.34);
-    public static final Rotation2d kRearRightAngularOffset = Rotation2d.fromDegrees(95.34);
+    public static final Rotation2d kFrontLeftAngulatOffset = Rotation2d.fromDegrees(23.7);
+    public static final Rotation2d kFrontRightAngularOffset = Rotation2d.fromDegrees(263.1);
+    public static final Rotation2d kRearLeftAngularOffset = Rotation2d.fromDegrees(160);
+    public static final Rotation2d kRearRightAngularOffset = Rotation2d.fromDegrees(201.7);
 
     /* MOTOR IDS */
     public static final int FRONT_LEFT_DRIVE_ID = 17;
@@ -73,8 +73,8 @@ public final class Constants {
     /* Encoder IDs */
     public static final int FRONT_LEFT_ENCODER_ID = 0;
     public static final int FRONT_RIGHT_ENCODER_ID = 1;
-    public static final int BACK_LEFT_ENCODER_ID = 3;
-    public static final int BACK_RIGHT_ENCODER_ID = 2;
+    public static final int BACK_LEFT_ENCODER_ID = 2;
+    public static final int BACK_RIGHT_ENCODER_ID = 3;
 
 
     //TODO: Figure out PIDs for both Drive Motors and Turn Motors
