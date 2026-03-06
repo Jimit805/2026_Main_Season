@@ -163,7 +163,7 @@ public final class Constants {
     public static final double GRAVITY = 32.185; // Feet per second per second
 
     // Height and length of the hub
-    public static final double HUB_HEIGHT = 6; // Feet 
+    public static final double HUB_HEIGHT = 6.4; // Feet 
     public static final double HUB_HALF_LENGTH = 1.958335; // Feet    
 
     // How long to speed up shooter before hub active

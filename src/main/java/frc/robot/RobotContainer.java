@@ -17,6 +17,7 @@ import frc.robot.commands.Intake.RotateIntakeManual;
 import frc.robot.commands.shooter.ManualShoot;
 import frc.robot.commands.shooter.ReadyShooter;
 import frc.robot.commands.shooter.Shoot;
+import frc.robot.commands.shooter.ShootAndIndex;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -73,11 +74,15 @@ public class RobotContainer {
   // TODO : POSITIVE IS CORRECT WAY
   private final SpinStageOneManual m_IndexerStageOneManual = new SpinStageOneManual(m_Indexer, m_driverController);
   private final SpinStageTwoManual m_IndexerStageTwoManual = new SpinStageTwoManual(m_Indexer, m_driverController); // TODO change axis
+  private final SpinStageOne m_spinStageOne = new SpinStageOne(m_Indexer, 0.2); // TODO: Set correct speed
+  private final SpinStageTwo m_spinStageTwo = new SpinStageTwo(m_Indexer, 0.2); // TODO: Set correct speed
+
+  private final ShootAndIndex m_shootAndIndex = new ShootAndIndex(m_Shoot, m_spinStageTwo);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     Trigger preFire = new Trigger(() -> m_Shooter.isHubAlmostActive());
-    preFire.onTrue(m_ReadyShooter);
+    //preFire.onTrue(m_ReadyShooter);
 
     // Configure the trigger bindings
     configureBindings();
@@ -91,7 +96,7 @@ public class RobotContainer {
               MathUtil.applyDeadband(m_driverController.getRawAxis(1), OIConstants.kDriveDeadband), //drive
               MathUtil.applyDeadband(m_driverController.getRawAxis(0), OIConstants.kDriveDeadband),
               MathUtil.applyDeadband(m_driverController.getRawAxis(4), OIConstants.kDriveDeadband), //rotation
-                true),
+                false),
             m_robotDrive));
 
 
@@ -114,7 +119,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    frc.robot.Button.rightTriggerDriver.whileTrue(m_Shoot);
+    frc.robot.Button.rightTriggerDriver.whileTrue(m_shootAndIndex);
     
   }
 

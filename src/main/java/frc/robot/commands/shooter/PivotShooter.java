@@ -5,6 +5,7 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.ShooterCalculations;
 import frc.robot.subsystems.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
@@ -21,7 +22,16 @@ public class PivotShooter extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    mainShooter.pivotShooterToPosition(rotations);
+    
+    double[] result = new double[2];
+    double distance = ShooterCalculations.distanceToHub();
+    try {
+      result = ShooterCalculations.calculateShooterTrajectory(distance);
+    } catch (IndexOutOfBoundsException e) {
+      result[0] = 0;
+      result[1] = 0;
+    }
+    mainShooter.pivotShooterToPosition(result[0] * 2 * Math.PI);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

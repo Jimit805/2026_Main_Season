@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -11,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Add your docs here. */
 public class Button {
-    public static PS4Controller controller1 = new PS4Controller(0);
+    public static XboxController controller1 = new XboxController(0);
 
-    public static Trigger leftTriggerDriver = new JoystickButton(controller1, 2);
-    public static Trigger rightTriggerDriver = new JoystickButton(controller1, 8);
+    public static Trigger leftTriggerDriver =  new Trigger(() -> controller1.getRawAxis(2) > 0.1);
+    public static Trigger rightTriggerDriver = new Trigger(() -> controller1.getRawAxis(3) > 0.1);
 }
