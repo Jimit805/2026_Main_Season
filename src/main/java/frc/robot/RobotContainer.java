@@ -66,7 +66,7 @@ public class RobotContainer {
   // The driver's controller
 
   Trigger m_ResetEncoderFieldRelative = new JoystickButton(m_driverController, 8);
-  Trigger m_ResetGyro = new JoystickButton(m_driverController, 7);
+ // Trigger m_ResetGyro = new JoystickButton(m_driverController, 7);
   Trigger m_TestIntakeRotation = new JoystickButton(m_driverController, 1);
 
 
@@ -85,7 +85,7 @@ public class RobotContainer {
     Trigger preFire = new Trigger(() -> m_Shooter.isHubAlmostActive());
     preFire.onTrue(m_ReadyShooter);
 
-    m_ResetGyro.onTrue(new RunCommand(() -> m_robotDrive.resetGyro(), m_robotDrive));
+   //m_ResetGyro.onTrue(new RunCommand(() -> m_robotDrive.resetGyro(), m_robotDrive));
 
     
 
