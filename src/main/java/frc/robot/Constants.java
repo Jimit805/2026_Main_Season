@@ -54,8 +54,8 @@ public final class Constants {
     // Maximums and minimums (Tune these)
     public static final double MAX_FLYWHEEL_VELOCITY = 35; // Feet per second
     public static final double MIN_FLYWHEEL_VELOCITY = 10; // Feet per second
-    public static final double MAX_SHOOTER_ANGLE = (Math.PI / 2); // Radians
-    public static final double MIN_SHOOTER_ANGLE = (Math.PI / 15); // Radians
+    public static final double MAX_SHOOTER_ANGLE = 1.36136; // Radians
+    public static final double MIN_SHOOTER_ANGLE = 0.994838; // Radians
 
     // Errors //
     public static final double FLYWHEEL_RPM_ACCEPTABLE_ERROR = 2; // The maximum error allowed in the flywheel RPM
