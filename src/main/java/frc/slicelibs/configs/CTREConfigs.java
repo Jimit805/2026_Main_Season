@@ -5,6 +5,7 @@
 package frc.slicelibs.configs;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import frc.robot.Constants;
 
@@ -15,6 +16,10 @@ public class CTREConfigs {
     /* Initiating the different TalonFX configurators */
     public final TalonFXConfiguration m_swerveDriveConfigs = new TalonFXConfiguration();
     public final TalonFXConfiguration m_swerveTurnConfigs = new TalonFXConfiguration();
+
+    public final TalonFXConfiguration shooterConfigs = new TalonFXConfiguration();
+    public final TalonFXConfiguration shooterRightConfigs = new TalonFXConfiguration();
+
 
     public CTREConfigs(){
 
@@ -40,6 +45,29 @@ public class CTREConfigs {
 
         m_swerveTurnConfigs.Feedback.SensorToMechanismRatio = Constants.DriveConstants.ANGLE_GEAR_RATIO;
         //m_swerveTurnConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+
+        //////////////////////////
+        /// Shooter Constants ////
+        //////////////////////////
+
+        /* Shooter PIDs */
+        var shooterPID = shooterConfigs.Slot0;
+        shooterPID.kP = Constants.ShooterConstants.FLYWHEEL_KP;
+        shooterPID.kI = Constants.ShooterConstants.FLYWHEEL_KI;
+        shooterPID.kD = Constants.ShooterConstants.FLYWHEEL_KD;
+
+
+        var shooterLimits = shooterConfigs.CurrentLimits;
+
+
+        var shooterRightPID = shooterRightConfigs.Slot0;
+        shooterPID.kP = Constants.ShooterConstants.FLYWHEEL_KP;
+        shooterPID.kI = Constants.ShooterConstants.FLYWHEEL_KI;
+        shooterPID.kD = Constants.ShooterConstants.FLYWHEEL_KD;
+
+        var shooterRight = shooterRightConfigs.MotorOutput;
+        shooterRight.Inverted = InvertedValue.Clockwise_Positive;
+        
 
     }
     

@@ -14,6 +14,9 @@ import frc.robot.commands.Indexer.SpinStageTwoManual;
 import frc.robot.commands.Intake.MoveIntakeManual;
 import frc.robot.commands.Intake.RotateIntake;
 import frc.robot.commands.Intake.RotateIntakeManual;
+import frc.robot.commands.shooter.ManualShoot;
+import frc.robot.commands.shooter.ReadyShooter;
+import frc.robot.commands.shooter.Shoot;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
@@ -23,6 +26,10 @@ import java.util.function.ObjIntConsumer;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PS4Controller;
+import edu.wpi.first.wpilibj.StadiaController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
@@ -46,7 +54,13 @@ public class RobotContainer {
   private final MoveIntakeManual m_MoveIntakeManual = new MoveIntakeManual(m_Intake, m_driverController);
   private final RotateIntake m_RotateIntakeManual = new RotateIntake(m_Intake, 0.25);
   
-  DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+
+  private final Shooter m_Shooter = new Shooter();
+
+  private final ManualShoot m_ManualShoot = new ManualShoot(m_Shooter, m_driverController);
+  private final ReadyShooter m_ReadyShooter = new ReadyShooter(m_Shooter);
+  private final Shoot m_Shoot = new Shoot(m_Shooter);
 
   // The driver's controller
 
@@ -62,7 +76,10 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-      // Configure the button bindings
+    Trigger preFire = new Trigger(() -> m_Shooter.isHubAlmostActive());
+    preFire.onTrue(m_ReadyShooter);
+
+    // Configure the trigger bindings
     configureBindings();
 
     // Configure default commands
@@ -82,6 +99,9 @@ public class RobotContainer {
 
   //new RunCommand( () -> m_robotDrive.setDutyCycle(0,.1),
   //    m_robotDrive));
+
+    //m_Shooter.setDefaultCommand(m_Shoot);
+
   }
 
   /**
@@ -94,10 +114,7 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    //m_Indexer.setDefaultCommand(m_IndexerStageOneManual); //TODO change to stage two for manual testing
-    m_Intake.setDefaultCommand(m_MoveIntakeManual); //TODO change default command for testing purposes
-
-    m_TestIntakeRotation.whileTrue(m_RotateIntakeManual);
+    frc.robot.Button.rightTriggerDriver.whileTrue(m_Shoot);
     
   }
 
@@ -108,6 +125,7 @@ public class RobotContainer {
    */
 //  public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-  //  return Autos.exampleAuto(m_exampleSubsystem);
+    // TODO: get actual automomous command to return
+  //  return null;
  // }
 }
