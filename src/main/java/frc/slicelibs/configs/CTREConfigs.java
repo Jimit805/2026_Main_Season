@@ -38,6 +38,9 @@ public class CTREConfigs {
         swerveTurnPIDs.kI = Constants.DriveConstants.TURN_KI;
         swerveTurnPIDs.kD = Constants.DriveConstants.TURN_KD;
 
+        m_swerveTurnConfigs.Feedback.SensorToMechanismRatio = Constants.DriveConstants.ANGLE_GEAR_RATIO;
+        //m_swerveTurnConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+
     }
     
 

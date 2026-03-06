@@ -3,7 +3,9 @@ package frc.robot.subsystems.drivetrain;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.fasterxml.jackson.databind.util.ClassUtil.Ctor;
 
 import edu.wpi.first.hal.simulation.RoboRioDataJNI;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,7 +31,7 @@ public class SwerveModule {
     private TalonFX drivingMotor;
     private TalonFX turningMotor;
 
-    private AnalogEncoder rotationAnalogEncoder;
+    private CANcoder rotationAnalogEncoder;
   //  private AnalogInput rotation;
     private Encoder integratedEncoder;
 
@@ -47,34 +49,35 @@ public class SwerveModule {
         drivingMotor = new TalonFX(driveCanID);
         turningMotor = new TalonFX(turnCanId);
 
-      //  rotation  = new AnalogInput(encoderId);
+        //rotation  = new AnalogInput(encoderId);
 
         drivingMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.m_swerveDriveConfigs);
         turningMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.m_swerveTurnConfigs);
 
-        rotationAnalogEncoder = new AnalogEncoder(encoderId, 360, 0); //TODO get channel
+        rotationAnalogEncoder = new CANcoder(encoderId);
         // rotationAnalogEncoder = new AnalogEncoder(encoderId);
         //turningMotor.setPosition(Math.abs(rotationAnalogEncoder.get() - (angularOffset.getDegrees())));
         //turningMotor.setPosition(turningMotor.getPosition().getValueAsDouble() - angularOffset.getDegrees());
 
-        turningMotor.setPosition(rotationAnalogEncoder.get());
+        
+
+        turningMotor.setPosition(rotationAnalogEncoder.getAbsolutePosition().getValueAsDouble() - angularOffset.getRotations()/* Constants.DriveConstants.ANGLE_GEAR_RATIO*/ );
         //PositionVoltage initial = new PositionVoltage(rotationAnalogEncoder.get() * 360 - angularOffset.getDegrees());
 
-        // turningMotor.setControl(initial.withPosition(Math.abs(rotationAnalogEncoder.get() * 360 - angularOffset.getDegrees())));
-        turningMotor.setControl(new PositionVoltage(desiredState.angle.getRotations()));
+        //turningMotor.setControl(initial.withPosition(Math.abs(rotationAnalogEncoder.get() * 360 - angularOffset.getDegrees())));
     
-        desiredState.angle = Rotation2d.fromRotations(rotationAnalogEncoder.get());
+        desiredState.angle = Rotation2d.fromRotations(rotationAnalogEncoder.getAbsolutePosition().getValueAsDouble() /* Constants.DriveConstants.ANGLE_GEAR_RATIO */);
 
     }
 
     public SwerveModuleState getSwerveModuleState(){
-        return new SwerveModuleState(drivingMotor.getPosition().getValueAsDouble(), 
-            new Rotation2d(turningMotor.getPosition().getValueAsDouble()));
+        return new SwerveModuleState(drivingMotor.getPosition().getValueAsDouble() / Constants.DriveConstants.DRIVE_GEAR_RATIO, 
+            new Rotation2d(turningMotor.getPosition().getValueAsDouble() /*/ Constants.DriveConstants.ANGLE_GEAR_RATIO)*/));
     }
     
     public SwerveModulePosition getSwerveModulePosition(){
-        return new SwerveModulePosition(drivingMotor.getPosition().getValueAsDouble(),
-            new Rotation2d(turningMotor.getPosition().getValueAsDouble()));
+        return new SwerveModulePosition(drivingMotor.getPosition().getValueAsDouble() / Constants.DriveConstants.DRIVE_GEAR_RATIO,
+            new Rotation2d(turningMotor.getPosition().getValueAsDouble() /*/ Constants.DriveConstants.ANGLE_GEAR_RATIO*/));
     }
 
     public void setDutyCycle(double drive, double turn){
@@ -89,13 +92,18 @@ public class SwerveModule {
 
         correctedDesiredState.optimize(new Rotation2d(turningMotor.getPosition().getValueAsDouble()));
 
-        VelocityVoltage velocityRequest = new VelocityVoltage(0).withSlot(0);
+        VelocityVoltage velocityRequest = new VelocityVoltage((correctedDesiredState.speedMetersPerSecond / 0.0508) * Constants.DriveConstants.DRIVE_GEAR_RATIO).withSlot(0);
 
-        drivingMotor.setControl(velocityRequest.withVelocity(correctedDesiredState.speedMetersPerSecond / 0.0508));
+        drivingMotor.setControl(velocityRequest);
 
-        PositionVoltage positionRequest = new PositionVoltage(correctedDesiredState.angle.getRotations());
+        PositionVoltage positionRequest = new PositionVoltage(correctedDesiredState.angle.getRotations() /** Constants.DriveConstants.ANGLE_GEAR_RATIO*/);
+        //PositionVoltage positionRequest = new PositionVoltage(0);
 
-        turningMotor.setControl(positionRequest.withPosition(correctedDesiredState.angle.getRotations()));
+        turningMotor.setControl(positionRequest);
+
+        SmartDashboard.putNumber(module_number + " desired speed", correctedDesiredState.speedMetersPerSecond);
+        //SmartDashboard.putNumber(module_number + " desired angle", correctedDesiredState.angle.getRotations());
+        SmartDashboard.putNumber(module_number + " desired angle", correctedDesiredState.angle.getRotations() /* * Constants.DriveConstants.ANGLE_GEAR_RATIO */);
 
         // turningMotor.setControl(new PositionVoltage(desiredState.angle.getRotations()));
         //SmartDashboard.putNumber("Driving Encoder " + driveCanID, (rotationAnalogEncoder.get());
@@ -106,20 +114,22 @@ public class SwerveModule {
 
     }
 
-    public double getTurnRotation(){
-        return rotationAnalogEncoder.get();
-    }
-    public double getANYTHING(){
-        return (Math.abs(rotationAnalogEncoder.get() - (angularOffset.getDegrees())));
+    public double getRelativeEncoder(){
+        return turningMotor.getPosition().getValueAsDouble();
     }
 
-  //  public double getPosition() {
-    //    double b = (inverted ? -1.0 : 1.0) * ((rotationAnalogEncoder.get()))
+    public double getAbsoluteEncoder(){
+        return rotationAnalogEncoder.getAbsolutePosition().getValueAsDouble();
+    }
+
+    //public double getPosition() {
+    //  double b = (inverted ? -1.0 : 1.0) * ((rotationAnalogEncoder.get()))
     //}
     
     // TODO : add a RESET ENCODERS METHOD
 
     public void resetEncoders(){
+
     }
     
     /*

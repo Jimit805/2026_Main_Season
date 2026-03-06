@@ -44,11 +44,11 @@ public class DriveSubsystem extends SubsystemBase {
     Constants.DriveConstants.kRearLeftAngularOffset);
 
   private final SwerveModule m_backRightModule = new SwerveModule(3, 
-  Constants.DriveConstants.BACK_RIGHT_DRIVE_ID, 
-  Constants.DriveConstants.BACK_RIGHT_TURN_ID, 
-  Constants.DriveConstants.BACK_RIGHT_ENCODER_ID,
-  Constants.DriveConstants.kRearRightChassisAngularOffset,
-  Constants.DriveConstants.kRearRightAngularOffset);
+    Constants.DriveConstants.BACK_RIGHT_DRIVE_ID, 
+    Constants.DriveConstants.BACK_RIGHT_TURN_ID, 
+    Constants.DriveConstants.BACK_RIGHT_ENCODER_ID,
+    Constants.DriveConstants.kRearRightChassisAngularOffset,
+    Constants.DriveConstants.kRearRightAngularOffset);
 
   //TODO add/fix Gyro
 
@@ -104,14 +104,23 @@ public class DriveSubsystem extends SubsystemBase {
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
                 m_gyro.getRotation2d())
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+    SmartDashboard.putNumber("FL Swerve State Pre-desaturate", swerveModuleStates[0].angle.getRotations());
+    SmartDashboard.putNumber("FR Swerve State Pre-desaturate", swerveModuleStates[1].angle.getRotations());
+    SmartDashboard.putNumber("BL Swerve State Pre-desaturate", swerveModuleStates[3].angle.getRotations());
+    SmartDashboard.putNumber("BR Swerve State Pre-desaturate", swerveModuleStates[2].angle.getRotations());
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    SmartDashboard.putNumber("FL Swerve State Post-desaturate", swerveModuleStates[0].angle.getRotations());
+    SmartDashboard.putNumber("FR Swerve State Post-desaturate", swerveModuleStates[1].angle.getRotations());
+    SmartDashboard.putNumber("BL Swerve State Post-desaturate", swerveModuleStates[3].angle.getRotations());
+    SmartDashboard.putNumber("BR Swerve State Post-desaturate", swerveModuleStates[2].angle.getRotations());
     m_frontLeftModule.setDesiredState(swerveModuleStates[0]);
     m_frontRightModule.setDesiredState(swerveModuleStates[1]);
     m_backRightModule.setDesiredState(swerveModuleStates[2]);
     m_backLeftModule.setDesiredState(swerveModuleStates[3]);
     
   }
+  
   public void setDutyCycle (double DrivePercent, double RotationPercent) {
     m_backRightModule.setDutyCycle(DrivePercent, RotationPercent);
     m_backLeftModule.setDutyCycle(DrivePercent, RotationPercent);
@@ -123,21 +132,25 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Front Left Rotation : ", m_frontLeftModule.getTurnRotation());
-    SmartDashboard.putNumber("Front Right Rotation : ", m_frontRightModule.getTurnRotation());
-    SmartDashboard.putNumber("Back Left Rotation : ", m_backLeftModule.getTurnRotation());
-    SmartDashboard.putNumber("Back Right Rotation : ", m_backRightModule.getTurnRotation());
-    SmartDashboard.putNumber("Front Left Encoder Val", m_frontLeftModule.getANYTHING());
-    SmartDashboard.putNumber("Back Left Encoder Val", m_backLeftModule.getANYTHING());
-    SmartDashboard.putNumber("Front Right Encoder Val", m_frontRightModule.getANYTHING());
-    SmartDashboard.putNumber("Back Right Encoder Val", m_backRightModule.getANYTHING());
-  //  SmartDashboard.putNumber( "Back Left ROT: " , m_backLeftModule.getSwerveModuleState().angle.getDegrees());
-  //  SmartDashboard.putNumber( "Back Right ROT: " , m_backRightModule.getSwerveModuleState().angle.getDegrees());
-   // SmartDashboard.putNumber( "Front Right ROT: " , m_frontRightModule.getSwerveModuleState().angle.getDegrees());
-   // SmartDashboard.putNumber( "Front Left ROT: " , m_frontLeftModule.getSwerveModuleState().angle.getDegrees());
-
-
     
+    SmartDashboard.putNumber("Front Left Relative", m_frontLeftModule.getRelativeEncoder());
+    SmartDashboard.putNumber("Front Right Relative", m_frontRightModule.getRelativeEncoder());
+    SmartDashboard.putNumber("Back Left Relative", m_backLeftModule.getRelativeEncoder());
+    SmartDashboard.putNumber("Back Right Relative", m_backRightModule.getRelativeEncoder());
+
+    SmartDashboard.putNumber("Front Left Absolute", m_frontLeftModule.getAbsoluteEncoder());
+    SmartDashboard.putNumber("Front Right Absolute", m_frontRightModule.getAbsoluteEncoder());
+    SmartDashboard.putNumber("Back Left Absolute", m_backLeftModule.getAbsoluteEncoder());
+    SmartDashboard.putNumber("Back Eight Absolute", m_backRightModule.getAbsoluteEncoder());
+
+    //SmartDashboard.putNumber("Front Left Rotation : ", m_frontLeftModule.getTurnRotation());
+    //SmartDashboard.putNumber("Front Right Rotation : ", m_frontRightModule.getTurnRotation());
+    //SmartDashboard.putNumber("Back Left Rotation : ", m_backLeftModule.getTurnRotation());
+    //SmartDashboard.putNumber("Back Right Rotation : ", m_backRightModule.getTurnRotation());
+    //SmartDashboard.putNumber( "Back Left ROT: " , m_backLeftModule.getSwerveModuleState().angle.getDegrees());
+    //SmartDashboard.putNumber( "Back Right ROT: " , m_backRightModule.getSwerveModuleState().angle.getDegrees());
+    //SmartDashboard.putNumber( "Front Right ROT: " , m_frontRightModule.getSwerveModuleState().angle.getDegrees());
+    //SmartDashboard.putNumber( "Front Left ROT: " , m_frontLeftModule.getSwerveModuleState().angle.getDegrees());
   }    
   
   }
