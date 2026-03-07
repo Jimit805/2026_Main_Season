@@ -136,9 +136,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightModule.resetEncoders();
   }
 
-  public void resetGyro(){
-    m_gyro.reset();
-  }
+  //public void resetGyro(){
+  //  m_gyro.reset();
+ // }
   
   @Override
   public void periodic() {
