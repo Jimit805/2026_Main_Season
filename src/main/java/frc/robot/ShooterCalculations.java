@@ -85,11 +85,11 @@ public class ShooterCalculations {
         /*PoseEstimate robotPose;
         double[] hubXY = new double[2];
         if (DriverStation.getAlliance().get() == Alliance.Blue){
-            robotPose = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-right");
+            robotPose = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-left");
             hubXY[0] = Units.metersToFeet(Constants.FieldConstants.BLUE_HUB.getX());
             hubXY[1] = Units.metersToFeet(Constants.FieldConstants.BLUE_HUB.getY());
         } else if (DriverStation.getAlliance().get() == Alliance.Red) { 
-            robotPose = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight-right");
+            robotPose = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight-left");
             hubXY[0] = Units.metersToFeet(Constants.FieldConstants.RED_HUB.getX());
             hubXY[1] = Units.metersToFeet(Constants.FieldConstants.RED_HUB.getY());
         } else {
@@ -104,22 +104,22 @@ public class ShooterCalculations {
         return distance;*/
 
         // double distance = 0;
-        // if (!LimelightHelpers.getTV("limelight-right")){
+        // if (!LimelightHelpers.getTV("limelight-left")){
         //     return distance;
         // }
-        // double offsetAngleVertical = LimelightHelpers.getTY("limelight-right");
+        // double offsetAngleVertical = LimelightHelpers.getTY("limelight-left");
         // double angleToGoal = Math.toRadians(Constants.ShooterConstants.LIMELIGHT_ANGLE + offsetAngleVertical);
 
         // distance = (Constants.FieldConstants.HUB_APRILTAG_HEIGHT - Constants.ShooterConstants.LIMELIGHT_HEIGHT) / Math.tan(angleToGoal);
         
         // return distance;
         double distance = 0;
-        if (!LimelightHelpers.getTV("limelight-right")) {
+        if (!LimelightHelpers.getTV("limelight-left")) {
         return distance; // Return the last calculated distance if target is lost
     }
 
         //Get the vertical offset (ty) from LimelightHelpers
-        double targetOffsetAngle_Vertical = LimelightHelpers.getTY("limelight-right");
+        double targetOffsetAngle_Vertical = LimelightHelpers.getTY("limelight-left");
 
         //Get constants from the Constants file
         double limelightMountAngleDegrees = Constants.ShooterConstants.LIMELIGHT_ANGLE; 

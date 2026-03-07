@@ -14,10 +14,24 @@ import frc.robot.subsystems.Shooter;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class PivotShooter extends Command {
   private Shooter mainShooter;
+  double[] result = new double[2];
+
+  Thread calcThread;
+  Runnable calcRunnable;
   // private double rotations;
   /** Creates a new PivotShooter. */
   public PivotShooter(Shooter m_shooter) {
     mainShooter = m_shooter;
+    calcRunnable = () -> {  
+      double distance = ShooterCalculations.distanceToHub();
+      try {
+        result = ShooterCalculations.calculateShooterTrajectory(distance);
+        mainShooter.pivotShooterToPosition(result[0] * 2 * Math.PI);
+       } catch (IndexOutOfBoundsException e) {
+        result[0] = 0;
+        result[1] = 0;
+      }
+    };
     // rotations = targetAngle * 2 * Math.PI;
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -30,17 +44,11 @@ public class PivotShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double[] result = new double[2];
-    double distance = ShooterCalculations.distanceToHub();
-    try {
-      result = ShooterCalculations.calculateShooterTrajectory(distance);
-      mainShooter.pivotShooterToPosition(result[0] * 2 * Math.PI);
-    } catch (IndexOutOfBoundsException e) {
-      result[0] = Constants.ShooterConstants.MIN_SHOOTER_ANGLE;
-      result[1] = 0;
+    if (calcThread == null || !calcThread.isAlive()) {
+      calcThread = new Thread(calcRunnable);
+      calcThread.start();
     }
   }
-
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}

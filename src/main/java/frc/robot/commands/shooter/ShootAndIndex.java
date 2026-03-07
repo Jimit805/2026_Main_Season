@@ -15,13 +15,15 @@ import frc.robot.subsystems.Shooter;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ShootAndIndex extends ParallelCommandGroup {
   private Shoot shoot;
-  private SpinStageTwo stageTwoIndexer;
+  private Shooter shooter;
+  private Indexer indexer;
   /** Creates a new ShootAndIndex. */
-  public ShootAndIndex(Shoot m_shoot, SpinStageTwo m_stageTwoIndexer) {
-    shoot = m_shoot;
-    stageTwoIndexer = m_stageTwoIndexer;
+  public ShootAndIndex(Shooter shooter, Indexer indexer) {
+    this.shooter = shooter;
+    this.indexer = indexer;
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands(stageTwoIndexer, shoot);
+    // TODO tune Stage Two Speeds
+    addCommands(new SpinStageTwo(indexer, 0.3), new Shoot(shooter));
   }
 }

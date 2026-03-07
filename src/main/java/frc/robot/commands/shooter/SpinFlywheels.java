@@ -12,10 +12,23 @@ import frc.robot.subsystems.Shooter;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SpinFlywheels extends Command {
   private Shooter mainShooter;
+  Thread calcThread;
+  Runnable calcRunnable;
+  double[] result = new double[2];
   // private double angularSpeed;
   /** Creates a new SpinFlywheels. */
   public SpinFlywheels(Shooter m_shooter) {
     mainShooter = m_shooter;
+    calcRunnable = () -> {  
+      double distance = ShooterCalculations.distanceToHub();
+      try {
+        result = ShooterCalculations.calculateShooterTrajectory(distance);
+        mainShooter.spinFlywheels(result[1] / Constants.ShooterConstants.FLYWHEEL_RADIUS); // Spin up flywheels 4 seconds before hub active
+      } catch (IndexOutOfBoundsException e) {
+        result[0] = 0;
+        result[1] = 0;
+      }
+    };
     // angularSpeed = linearSpeed / Constants.ShooterConstants.FLYWHEEL_RADIUS;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(m_shooter);
@@ -30,14 +43,9 @@ public class SpinFlywheels extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double[] result = new double[2];
-    double distance = ShooterCalculations.distanceToHub();
-    try {
-      result = ShooterCalculations.calculateShooterTrajectory(distance);
-      mainShooter.spinFlywheels(result[1] / Constants.ShooterConstants.FLYWHEEL_RADIUS);
-    } catch (IndexOutOfBoundsException e) {
-      result[0] = 0;
-      result[1] = 0;
+    if (calcThread == null || !calcThread.isAlive()) {
+      calcThread = new Thread(calcRunnable);
+      calcThread.start();
     }
   }
 

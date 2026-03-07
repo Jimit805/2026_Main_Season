@@ -57,11 +57,10 @@ public final class Constants {
 
     //Angular offsets of the wheels
     //TODO find actual angle offsets
-    public static final Rotation2d kFrontLeftAngulatOffset = Rotation2d.fromDegrees(293.37);
-    public static final Rotation2d kFrontRightAngularOffset = Rotation2d.fromDegrees(174.96);
-    public static final Rotation2d kRearLeftAngularOffset = Rotation2d.fromDegrees(187.2);
-
-    public static final Rotation2d kRearRightAngularOffset = Rotation2d.fromDegrees(184.428);
+    public static final Rotation2d kFrontLeftAngulatOffset = Rotation2d.fromRotations(0.8135);
+    public static final Rotation2d kFrontRightAngularOffset = Rotation2d.fromRotations(0.4971);
+    public static final Rotation2d kRearLeftAngularOffset = Rotation2d.fromRotations(0.5191);
+    public static final Rotation2d kRearRightAngularOffset = Rotation2d.fromRotations(0.508);
 
     // public static final Rotation2d kFrontLeftAngulatOffset = Rotation2d.fromDegrees(0);
     // public static final Rotation2d kFrontRightAngularOffset = Rotation2d.fromDegrees(0);
@@ -96,7 +95,7 @@ public final class Constants {
     public static final double DRIVE_KI = 0;
     public static final double DRIVE_KD = 0;
 
-    public static final double TURN_KP = 6.789;
+    public static final double TURN_KP = 20;
     public static final double TURN_KI = 0;
     public static final double TURN_KD = 0;
     
@@ -106,7 +105,7 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final int kOperatorControllerPort = 1;
-    public static final double kDriveDeadband = 0.05;
+    public static final double kDriveDeadband = 0.025;
   }
 
   public static class IntakeConstants {

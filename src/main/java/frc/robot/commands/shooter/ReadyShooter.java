@@ -4,6 +4,8 @@
 
 package frc.robot.commands.shooter;
 
+import org.opencv.photo.CalibrateCRF;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ShooterCalculations;
 import frc.robot.subsystems.Shooter;
@@ -14,10 +16,24 @@ public class ReadyShooter extends Command {
   private double m_speed;
   double[] result = new double[2];
 
+  Thread calcThread;
+  Runnable calcRunnable;
+
   /** Creates a new ReadyShooter. */
   public ReadyShooter(Shooter shooter) {
     m_shooter = shooter;
     m_speed = result[1];
+
+    calcRunnable = () -> {  
+      double distance = ShooterCalculations.distanceToHub();
+      try {
+        result = ShooterCalculations.calculateShooterTrajectory(distance);
+        m_shooter.speedUpFlywheels(result[1]); // Spin up flywheels 4 seconds before hub active
+      } catch (IndexOutOfBoundsException e) {
+        result[0] = 0;
+        result[1] = 0;
+      }
+    };
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -28,14 +44,10 @@ public class ReadyShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double distance = ShooterCalculations.distanceToHub();
-    try {
-      result = ShooterCalculations.calculateShooterTrajectory(distance);
-    } catch (IndexOutOfBoundsException e) {
-      result[0] = 0;
-      result[1] = 0;
+    if (calcThread == null || !calcThread.isAlive()) {
+      calcThread = new Thread(calcRunnable);
+      calcThread.start();
     }
-    m_shooter.speedUpFlywheels(m_speed); // Spin up flywheels 4 seconds before hub active
   }
 
   // Called once the command ends or is interrupted.

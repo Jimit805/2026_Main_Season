@@ -78,7 +78,7 @@ public class RobotContainer {
   private final ManualShoot m_ManualShoot = new ManualShoot(m_Shooter, m_driverController);
   private final ReadyShooter m_ReadyShooter = new ReadyShooter(m_Shooter);
   private final Shoot m_Shoot = new Shoot(m_Shooter);
-  private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+  //private final SendableChooser<Command> m_chooser = new SendableChooser<>();
 
 
   /*
@@ -90,10 +90,11 @@ public class RobotContainer {
   /* Sequence & Parallel Commands */
   private final IntakeFuel m_IntakeFuel = new IntakeFuel(m_Intake, m_Indexer);
 
-  private final ShootAndIndex m_shootAndIndex = new ShootAndIndex(m_Shoot, m_spinStageTwo);
+  private final ShootAndIndex m_shootAndIndex = new ShootAndIndex(m_Shooter, m_Indexer);
 
   /* Autos */
-  Command autoCommand = new ParallelCommandGroup(m_Shoot, m_IndexerStageTwoManual);
+  // TODO improve auto
+  //Command autoCommand = new ParallelCommandGroup(m_Shoot, m_IndexerStageTwoManual);
 
 
 
@@ -101,8 +102,7 @@ public class RobotContainer {
   public RobotContainer() {
     Trigger preFire = new Trigger(() -> m_Shooter.isHubAlmostActive());
     preFire.onTrue(m_ReadyShooter);
-   // m_chooser.setDefaultOption("Simple Auto", autoCommand);
-   // m_ResetGyro.onTrue(new RunCommand(() -> m_robotDrive.resetGyro(), m_robotDrive));
+    //m_chooser.setDefaultOption("Simple Auto", autoCommand);
 
     
 
@@ -118,7 +118,7 @@ public class RobotContainer {
               MathUtil.applyDeadband(m_driverController.getRawAxis(1), OIConstants.kDriveDeadband), //drive
               MathUtil.applyDeadband(m_driverController.getRawAxis(0), OIConstants.kDriveDeadband),
               MathUtil.applyDeadband(m_driverController.getRawAxis(4), OIConstants.kDriveDeadband), //rotation
-                false),
+              true),
             m_robotDrive)
   );
 
@@ -152,7 +152,7 @@ public class RobotContainer {
     Buttons.controller1_minusButton.onTrue(new RunCommand( ()->m_robotDrive.resetGyro(), m_robotDrive) );
 
     
-    m_chooser.getSelected();
+    //m_chooser.getSelected();
   }
 
   /**
@@ -163,6 +163,6 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     // TODO: improve autos
-    return autoCommand;
+    return null;//autoCommand;
   }
 }

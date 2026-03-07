@@ -83,7 +83,9 @@ public class DriveSubsystem extends SubsystemBase {
 
 
   /** Creates a new DriveSubsystem. */
-  public DriveSubsystem() {}
+  public DriveSubsystem() {
+    m_gyro.reset();
+  }
 
     /**
    * Method to drive the robot using joystick info.
@@ -136,9 +138,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_backRightModule.resetEncoders();
   }
 
+
   public void resetGyro(){
     m_gyro.reset();
   }
+
   
   @Override
   public void periodic() {
