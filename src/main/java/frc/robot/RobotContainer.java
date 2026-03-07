@@ -100,7 +100,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     Trigger preFire = new Trigger(() -> m_Shooter.isHubAlmostActive());
-    preFire.onTrue(m_ReadyShooter);
+    preFire.whileTrue(m_ReadyShooter);
    // m_chooser.setDefaultOption("Simple Auto", autoCommand);
    // m_ResetGyro.onTrue(new RunCommand(() -> m_robotDrive.resetGyro(), m_robotDrive));
 

@@ -133,6 +133,7 @@ public class ShooterCalculations {
         //Calculate horizontal distance (X)
         // Formula: (TargetHeight - CameraHeight) / tan(TotalAngle)
         distance = (goalHeight - limelightLensHeight) / Math.tan(angleToGoalRadians);
+        System.out.println(distance);
         
         return distance;
     }

@@ -157,7 +157,7 @@ public final class Constants {
     
     // Optimization for Maths (Tune these)
     public static final double SHOOTER_STEP = 0.1;
-    public static final int SHOOTER_DIE_TIME = 1000000; // Maximum number of optimizations allowed
+    public static final int SHOOTER_DIE_TIME = 100000; // Maximum number of optimizations allowed
     public static final double H = 0.0000001;
   }
 
@@ -167,7 +167,7 @@ public final class Constants {
     public static final double GRAVITY = 32.185; // Feet per second per second
 
     // Height and length of the hub
-    public static final double HUB_HEIGHT = 6.4; // Feet 
+    public static final double HUB_HEIGHT = 6.15; // Feet 
     public static final double HUB_HALF_LENGTH = 1.958335; // Feet  
     public static final double HUB_APRILTAG_HEIGHT = Units.inchesToMeters(44.25); // inches  
 
