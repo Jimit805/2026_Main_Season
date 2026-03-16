@@ -113,6 +113,7 @@ public final class Constants {
     public static final int ROTATION_MOTOR_ID = 6;
     public static final int EXTENDER_MOTOR_ID = 5;
 
+    // Positional subsystem constants
     public static final double EXTENDER_KP = 0.2;
     public static final double EXTENDER_KI = 0.0;
     public static final double EXTENDER_KD = 0.0;
@@ -121,6 +122,10 @@ public final class Constants {
     public static final double POSITION_CONVERSION_FACTOR = (0.0254 * Math.PI) * EXTENDER_RATIO; //(pitch diameter of pinion * pi) * ratio
     public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR; //meters per second
 
+    public static final double STOWED_POSITION = 0.0; // Meters
+    public static final double DEPLOYED_POSITION = 0.2921; // Meters
+    // Roller motor constants
+    public static final double ROTATION_SPEED = 0.8;
   }
   
   public static class ShooterConstants {

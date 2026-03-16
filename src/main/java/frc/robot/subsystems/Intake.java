@@ -17,7 +17,6 @@ import frc.robot.Constants;
 public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
 
   private TalonFX rotationMotor;
-  private double targetPosition;
   private boolean active; // Tells whether or not intake is active
   // TODO maybe change to a method?
 
@@ -75,7 +74,6 @@ public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
    * @param position position to have the intake move to
    */
   public void moveIntakeToPosition(double position) {
-    targetPosition = position;
     setPosition(position);
   }
 
