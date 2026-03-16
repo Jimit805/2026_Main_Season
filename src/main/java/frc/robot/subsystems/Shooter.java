@@ -12,15 +12,13 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShooterConstants.FullShooterParams;
 import frc.slicelibs.TalonFXPositionalSubsystem;
 
 public class Shooter extends TalonFXPositionalSubsystem {
 
-  private TalonFX pivotMotor, leftShooterMotor, rightShooterMotor;
+  private TalonFX leftShooterMotor, rightShooterMotor;
 
   private double targetSpeed, targetPosition;
 

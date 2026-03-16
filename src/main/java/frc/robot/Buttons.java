@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-/** Add your docs here. */
+/* Add your docs here. */
 public class Buttons {
     public static XboxController controller1 = new XboxController(Constants.OIConstants.kDriverControllerPort);
 
@@ -28,7 +28,8 @@ public class Buttons {
 
     /* OPERATOR CONTROLLER */
     /*
-     * TODO Uncomment if operator controller is needed
+    
+    Uncomment if operator controller is needed
     
     public static XboxController controller2 = new XboxController(Constants.OIConstants.kOperatorControllerPort);
     
