@@ -2,13 +2,13 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.intake;
+package frc.robot.commands.Intake;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class oscillateIntake extends Command {
+public class OscillateIntake extends Command {
 
   private Intake m_intake;
   private double targetPosition;
@@ -26,7 +26,7 @@ public class oscillateIntake extends Command {
   @Override
   public void initialize() {
     targetPosition = m_intake.getExtenderPosition();
-    m_intake.isDeployed ? state = State.EXTENDING : state = State.RETRACTING;
+    state = m_intake.isDeployed() ? State.EXTENDING : State.RETRACTING;
     m_intake.spinRoller(Constants.IntakeConstants.ROLLER_RETRACT_SPEED);
   }
 
@@ -37,14 +37,14 @@ public class oscillateIntake extends Command {
       case EXTENDING:
         m_intake.moveIntakeToPosition(targetPosition);
         if (m_intake.getExtenderPosition() > targetPosition - .0075 && m_intake.getExtenderPosition() < targetPosition + .0075)
-            targetPosition < Constants.IntakeConstants.STOWED_POSITION ? targetPosition = Constants.IntakeConstants.STOWED_POSITION + Constants.IntakeConstants.OSCILLATION_AMOUNT : targetPosition -= (Constants.IntakeConstants.OSCILLATION_AMOUNT + Constants.IntakeConstants.OSCILLATION_DIFF);
+            targetPosition = targetPosition <= Constants.IntakeConstants.STOWED_POSITION ? Constants.IntakeConstants.STOWED_POSITION + Constants.IntakeConstants.OSCILLATION_AMOUNT : targetPosition - (Constants.IntakeConstants.OSCILLATION_AMOUNT + Constants.IntakeConstants.OSCILLATION_DIFF);
             state = State.RETRACTING;
         break;
       case RETRACTING:
         m_intake.moveIntakeToPosition(targetPosition);
         if (m_intake.getExtenderPosition() > targetPosition - .0075 && m_intake.getExtenderPosition() < targetPosition + .0075)
             targetPosition += (Constants.IntakeConstants.OSCILLATION_AMOUNT);
-            state = State.EXTENDING
+            state = State.EXTENDING;
         break;
     }
   }

@@ -26,13 +26,13 @@ public class SpinStageOne extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_Indexer.moveStageOneMotor(speed);
+    m_Indexer.runStageOneMotor(speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_Indexer.moveStageOneMotor(0);
+    m_Indexer.runStageOneMotor(0);
   }
 
   // Returns true when the command should end.

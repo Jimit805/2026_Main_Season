@@ -4,20 +4,13 @@
 
 package frc.robot;
 
-import frc.robot.Constants.IOConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.Indexer.SpinStageOne;
-import frc.robot.commands.Indexer.SpinStageOneManual;
 import frc.robot.commands.Indexer.SpinStageTwo;
-import frc.robot.commands.Indexer.SpinStageTwoManual;
-import frc.robot.commands.Intake.IntakeFuel;
-import frc.robot.commands.Intake.IntakeFuelTimed;
-import frc.robot.commands.Intake.MoveIntakeManual;
 import frc.robot.commands.Intake.OscillateIntake;
-import frc.robot.commands.Intake.RetractIntakeTimed;
-import frc.robot.commands.Intake.RotateIntake;
-import frc.robot.commands.Intake.RotateIntakeManual;
+import frc.robot.commands.Intake.ToggleIntake;
 import frc.robot.commands.shooter.ManualShoot;
 import frc.robot.commands.shooter.ReadyShooter;
 import frc.robot.commands.shooter.Shoot;
@@ -65,49 +58,19 @@ public class RobotContainer {
   /*  Intake Subsystem & Commands */
   private final Intake m_Intake =  new Intake();
 
-  private final MoveIntakeManual m_MoveIntakeManual = new MoveIntakeManual(m_Intake, m_driverController);
-  private final RotateIntake m_RotateIntakeManual = new RotateIntake(m_Intake, 0.25);
+  private final ToggleIntake m_ToggleIntake = new ToggleIntake(m_Intake);
+  private final OscillateIntake m_OscillateIntake = new OscillateIntake(m_Intake);
 
   /* Indexer Subsystem & Commands */
 
   private final Indexer m_Indexer = new Indexer();
-  
-  // TODO : POSITIVE IS CORRECT WAY
-  private final SpinStageOneManual m_IndexerStageOneManual = new SpinStageOneManual(m_Indexer, m_driverController);
-  private final SpinStageTwoManual m_IndexerStageTwoManual = new SpinStageTwoManual(m_Indexer, m_driverController); // TODO change axis
-  private final SpinStageOne m_spinStageOne = new SpinStageOne(m_Indexer, 0.2); // TODO: Set correct speed
-  private final SpinStageTwo m_spinStageTwo = new SpinStageTwo(m_Indexer, 0.2); // TODO: Set correct speed
+  private final SpinStageOne m_spinStageOne = new SpinStageOne(m_Indexer, 0.2);
+  private final SpinStageTwo m_spinStageTwo = new SpinStageTwo(m_Indexer, 0.2);
 
   /* Shooter Subsystem & Commands */
 
   private final Shooter m_Shooter = new Shooter();
-
-  // TODO fix up shooter calculations; SIMPLIFY
-  //private final ManualShoot m_ManualShoot = new ManualShoot(m_Shooter, m_driverController);
-  //private final ReadyShooter m_ReadyShooter = new ReadyShooter(m_Shooter);
-  //private final Shoot m_Shoot = new Shoot(m_Shooter);
-
   private final ShootAtHub m_ShootAtHub = new ShootAtHub(m_Shooter, m_Indexer);
-
-  //private final SendableChooser<Command> m_chooser = new SendableChooser<>();
-
-
-  /* Sequence & Parallel Commands */
-  private final IntakeFuelTimed m_IntakeFuelTimed = new IntakeFuelTimed(m_Intake, m_Indexer);
-  private final RetractIntakeTimed m_RetractIntakeTimed = new RetractIntakeTimed(m_Intake, m_Indexer);
-  private final OscillateIntake m_OscillateIntake = new OscillateIntake(m_Intake, m_Indexer);
-  // TODO get positional Intake stuff working
-  //private final IntakeFuel m_IntakeFuel = new IntakeFuel(m_Intake, m_Indexer);
-
-  //private final ShootAndIndex m_shootAndIndex = new ShootAndIndex(m_Shooter, m_Indexer);
-
-  /* Autos */
-  // TODO improve auto
-  //Command autoCommand = new ShootAtHub(m_Shooter, m_Indexer);
-    
-  //new ParallelCommandGroup(m_ShootAtHub);
-
-
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -130,18 +93,12 @@ public class RobotContainer {
     //     // Turning is controlled by the X axis of the right stick.
           new RunCommand(  
             () -> m_robotDrive.drive(
-              MathUtil.applyDeadband(m_driverController.getRawAxis(1), IOConstants.kDriveDeadband), //translation
-              MathUtil.applyDeadband(m_driverController.getRawAxis(0), IOConstants.kDriveDeadband), //translation
-              MathUtil.applyDeadband(m_driverController.getRawAxis(4), IOConstants.kDriveDeadband), //rotation
+              MathUtil.applyDeadband(m_driverController.getRawAxis(1), OIConstants.kDriveDeadband), //translation
+              MathUtil.applyDeadband(m_driverController.getRawAxis(0), OIConstants.kDriveDeadband), //translation
+              MathUtil.applyDeadband(m_driverController.getRawAxis(4), OIConstants.kDriveDeadband), //rotation
               true),
             m_robotDrive)
   );
-
-      
-          
-
-
-            
 
   //new RunCommand( () -> m_robotDrive.setDutyCycle(0,.1),
   //    m_robotDrive));
@@ -165,10 +122,11 @@ public class RobotContainer {
     Buttons.controller1_RightTrigger.whileTrue(m_ShootAtHub);
     Buttons.controller1_rightBumper.whileTrue(m_ShootAtHub);
 
-    Buttons.controller1_leftBumper.whileTrue(m_IntakeFuelTimed);
-    Buttons.controller1_LeftTrigger.whileTrue(m_RetractIntakeTimed);
+    Buttons.controller1_leftBumper.whileTrue(m_ToggleIntake);
+    Buttons.controller1_RightTrigger.whileTrue(m_OscillateIntake);
+    Buttons.controller1_rightBumper.whileTrue(m_OscillateIntake);
 
-    Buttons.controller1_plusButton.onTrue(new InstantCommand( ()->m_robotDrive.resetGyro(), m_robotDrive) );
+    Buttons.controller1_minusButton.onTrue(new InstantCommand( ()->m_robotDrive.resetGyro(), m_robotDrive) );
 
     //Buttons.controller1_XButton.whileTrue(m_OscillateIntake); TODO reimplement
     //m_chooser.getSelected();
