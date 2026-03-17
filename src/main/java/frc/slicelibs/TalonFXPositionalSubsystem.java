@@ -144,7 +144,7 @@ public class TalonFXPositionalSubsystem extends SubsystemBase {
      * @param velocity a value in the units defined by the positionConversionFactor
      */
     public void setPosition(double position) {
-        PositionVoltage request = new PositionVoltage(0).withSlot(0);
+        PositionVoltage request = new PositionVoltage(0).withSlot(0).withEnableFOC(true);
         for (TalonFX motor : motors) {
             motor.setControl(request.withPosition(position / positionConversionFactor));
         }

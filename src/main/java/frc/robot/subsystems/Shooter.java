@@ -6,8 +6,11 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -47,9 +50,9 @@ public class Shooter extends TalonFXPositionalSubsystem {
   }
 
   // Set flywheels to a specific speed
-  public void spinFlywheels(double speed) {
-    leftShooterMotor.set(speed);
-    rightShooterMotor.set(speed);
+  public void spinFlywheels(double targetRPM) {
+    leftShooterMotor.setControl(new VelocityVoltage(targetRPM / 60.0).withEnableFOC(true));
+    rightShooterMotor.setControl(new Follower(leftShooterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
   }
 
   // Move shooter hood to a position

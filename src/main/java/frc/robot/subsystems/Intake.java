@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -48,11 +49,11 @@ public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
    * @param speed speed to set the motor to (-1.0 to 1.0)
    */
   public void spinRoller(double speed) {
-    rotationMotor.set(speed);
+    rotationMotor.setControl(new VelocityDutyCycle(speed).withEnableFOC(true));
   }
 
   public void stopRoller() {
-    rotationMotor.set(0.0);
+    rotationMotor.stopMotor();
   }
   /**
    * Moves the intake to the set position

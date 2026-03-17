@@ -27,13 +27,13 @@ public class RealSwerveModuleIO implements SwerveModuleIO {
     private final SimpleMotorFeedforward driveFeedforward;
 
     /* Drive control requests */
-    private final DutyCycleOut driveDutyCycleRequest = new DutyCycleOut(0);
-    private final VoltageOut driveVoltageRequest = new VoltageOut(0);
-    private final VelocityVoltage driveVelocityRequest = new VelocityVoltage(0);
+    private final DutyCycleOut driveDutyCycleRequest = new DutyCycleOut(0).withEnableFOC(true);
+    private final VoltageOut driveVoltageRequest = new VoltageOut(0).withEnableFOC(true);
+    private final VelocityVoltage driveVelocityRequest = new VelocityVoltage(0).withEnableFOC(true);
 
     /* Turn control request - ContinuousWrap enabled in config */
-    private final PositionVoltage turnPositionRequest = new PositionVoltage(0);
-    private final VoltageOut turnVoltageRequest = new VoltageOut(0);
+    private final PositionVoltage turnPositionRequest = new PositionVoltage(0).withEnableFOC(true);
+    private final VoltageOut turnVoltageRequest = new VoltageOut(0).withEnableFOC(true);
 
     /* Drive status signals */
     private final StatusSignal<Angle> drivePositionSignal;

@@ -26,8 +26,8 @@ public class DriveCommand extends Command {
         m_driverController = driverController;
         m_isOpenLoop = isOpenLoop;
 
-        translationFilter = new PolarJoystickFilter(new JoystickFilterConfig(0.09, 0.9, 1.0, 1.0));
-        rotationFilter    = new PolarJoystickFilter(new JoystickFilterConfig(0.07, 0.6, 1.0, 1.0));
+        translationFilter = new PolarJoystickFilter(new JoystickFilterConfig(0.04, 0.9, 1.0, 1.0));
+        rotationFilter    = new PolarJoystickFilter(new JoystickFilterConfig(0.04, 0.6, 1.0, 1.0));
     }
 
     @Override

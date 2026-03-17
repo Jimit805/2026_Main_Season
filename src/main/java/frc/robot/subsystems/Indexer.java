@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,16 +29,16 @@ public class Indexer extends SubsystemBase {
   }
 
   public void runStageOneMotor(double speed) {
-    stageOneMotor.set(speed);
+    stageOneMotor.setControl(new VelocityVoltage(speed).withEnableFOC(true));
   }
    
   public void runStageTwoMotor(double speed) {
-    stageTwoMotor.set(speed);
+    stageTwoMotor.setControl(new VelocityVoltage(speed).withEnableFOC(true));
   }
 
-  public void stopAll(){
-    stageOneMotor.set(0.0);
-    stageTwoMotor.set(0.0);
+  public void stopAll() {
+    stageOneMotor.stopMotor();
+    stageTwoMotor.stopMotor();
   }
 
   @Override
