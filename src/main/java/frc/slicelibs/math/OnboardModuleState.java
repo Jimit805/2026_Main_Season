@@ -31,10 +31,14 @@ public class OnboardModuleState {
             upperBound = scopeReference - lowerOffset;
             lowerBound = scopeReference - (360 + lowerOffset);
         }
-        while (newAngle < lowerBound) newAngle += 360;
-        while (newAngle > upperBound) newAngle -= 360;
-        if (newAngle - scopeReference > 180) newAngle -= 360;
-        else if (newAngle - scopeReference < -180) newAngle += 360;
+        while (newAngle < lowerBound)
+            newAngle += 360;
+        while (newAngle > upperBound)
+            newAngle -= 360;
+        if (newAngle - scopeReference > 180)
+            newAngle -= 360;
+        else if (newAngle - scopeReference < -180)
+            newAngle += 360;
         return newAngle;
     }
 }

@@ -23,124 +23,128 @@ import frc.robot.subsystems.Drivetrain.SwerveModuleIO;
 
 public class RobotContainer {
 
-  private final XboxController driverController = Buttons.controller1;
-
-  // ==========================
-  // Subsystems
-  // ==========================
-
-  public final Drivetrain m_drivetrain;
-  public final Intake m_Intake;
-  public final Indexer m_Indexer;
-  public final Shooter m_Shooter;
-
-  // ==========================
-  // Commands
-  // ==========================
-
-  /* Drivetrain */
-  public final DriveCommand m_swerveDriveOpenLoop;
-  public final DriveCommand m_swerveDriveClosedLoop;
-  public final RunDutyCycleCommand m_driveDutyCycle;
-  public final ResetFieldOrientedHeading m_resetFieldOrientedHeading;
-  public final Command m_sysIDDriveRoutine;
-
-  /* Intake */
-  public final ToggleIntake m_ToggleIntake;
-  public final OscillateIntake m_OscillateIntake;
-
-  /* Indexer */
-  public final SpinStageOne m_spinStageOne;
-  public final SpinStageTwo m_spinStageTwo;
-
-  /* Shooter */
-  public final ShootAtHub m_ShootAtHub;
-
-  public RobotContainer() {
+    private final XboxController driverController = Buttons.controller1;
 
     // ==========================
     // Subsystems
     // ==========================
 
-    switch (Constants.ADVANTAGE_KIT_MODE) {
-      case REAL:
-        m_drivetrain = new Drivetrain(
-            new RealSwerveModuleIO(Constants.DriveConstants.FRONT_LEFT_MODULE),
-            new RealSwerveModuleIO(Constants.DriveConstants.FRONT_RIGHT_MODULE),
-            new RealSwerveModuleIO(Constants.DriveConstants.BACK_RIGHT_MODULE),
-            new RealSwerveModuleIO(Constants.DriveConstants.BACK_LEFT_MODULE));
-        break;
-      case SIM:
-        m_drivetrain = new Drivetrain(
-            new SimSwerveModuleIO(),
-            new SimSwerveModuleIO(),
-            new SimSwerveModuleIO(),
-            new SimSwerveModuleIO());
-        break;
-      default:
-        m_drivetrain = new Drivetrain(
-            new SwerveModuleIO() {},
-            new SwerveModuleIO() {},
-            new SwerveModuleIO() {},
-            new SwerveModuleIO() {});
-        break;
-    }
-
-    m_Intake  = new Intake();
-    m_Indexer = new Indexer();
-    m_Shooter = new Shooter();
+    public final Drivetrain m_drivetrain;
+    public final Intake m_Intake;
+    public final Indexer m_Indexer;
+    public final Shooter m_Shooter;
 
     // ==========================
     // Commands
     // ==========================
 
     /* Drivetrain */
-    m_swerveDriveOpenLoop       = new DriveCommand(m_drivetrain, driverController, true);
-    m_swerveDriveClosedLoop     = new DriveCommand(m_drivetrain, driverController, false);
-    m_driveDutyCycle            = new RunDutyCycleCommand(m_drivetrain, 0.10, 0);
-    m_resetFieldOrientedHeading = new ResetFieldOrientedHeading(m_drivetrain);
-    m_sysIDDriveRoutine         = new DeferredCommand(m_drivetrain::getSysIDDriveRoutine, Set.of(m_drivetrain));
+    public final DriveCommand m_swerveDriveOpenLoop;
+    public final DriveCommand m_swerveDriveClosedLoop;
+    public final RunDutyCycleCommand m_driveDutyCycle;
+    public final ResetFieldOrientedHeading m_resetFieldOrientedHeading;
+    public final Command m_sysIDDriveRoutine;
 
     /* Intake */
-    m_ToggleIntake    = new ToggleIntake(m_Intake);
-    m_OscillateIntake = new OscillateIntake(m_Intake);
+    public final ToggleIntake m_ToggleIntake;
+    public final OscillateIntake m_OscillateIntake;
 
     /* Indexer */
-    m_spinStageOne = new SpinStageOne(m_Indexer, 0.2);
-    m_spinStageTwo = new SpinStageTwo(m_Indexer, 0.2);
+    public final SpinStageOne m_spinStageOne;
+    public final SpinStageTwo m_spinStageTwo;
 
     /* Shooter */
-    m_ShootAtHub = new ShootAtHub(m_Shooter, m_Indexer);
+    public final ShootAtHub m_ShootAtHub;
 
-    configureBindings();
+    public RobotContainer() {
 
-    m_drivetrain.setDefaultCommand(m_swerveDriveClosedLoop);
-  }
+        // ==========================
+        // Subsystems
+        // ==========================
 
-  private void configureBindings() {
+        switch (Constants.ADVANTAGE_KIT_MODE) {
+            case REAL:
+                m_drivetrain = new Drivetrain(
+                        new RealSwerveModuleIO(Constants.DriveConstants.FRONT_LEFT_MODULE),
+                        new RealSwerveModuleIO(Constants.DriveConstants.FRONT_RIGHT_MODULE),
+                        new RealSwerveModuleIO(Constants.DriveConstants.BACK_RIGHT_MODULE),
+                        new RealSwerveModuleIO(Constants.DriveConstants.BACK_LEFT_MODULE));
+                break;
+            case SIM:
+                m_drivetrain = new Drivetrain(
+                        new SimSwerveModuleIO(),
+                        new SimSwerveModuleIO(),
+                        new SimSwerveModuleIO(),
+                        new SimSwerveModuleIO());
+                break;
+            default:
+                m_drivetrain = new Drivetrain(
+                        new SwerveModuleIO() {
+                        },
+                        new SwerveModuleIO() {
+                        },
+                        new SwerveModuleIO() {
+                        },
+                        new SwerveModuleIO() {
+                        });
+                break;
+        }
 
-    // ================
-    // Driver Controls
-    // ================
+        m_Intake = new Intake();
+        m_Indexer = new Indexer();
+        m_Shooter = new Shooter();
 
-    /* Drivetrain */
-    // Buttons.controller1_YButton.onTrue(m_sysIDDriveRoutine);
-    Buttons.controller1_minusButton.toggleOnTrue(m_resetFieldOrientedHeading);
+        // ==========================
+        // Commands
+        // ==========================
 
-    /* Shooter */
-    Buttons.controller1_RightTrigger.whileTrue(m_ShootAtHub);
+        /* Drivetrain */
+        m_swerveDriveOpenLoop = new DriveCommand(m_drivetrain, driverController, true);
+        m_swerveDriveClosedLoop = new DriveCommand(m_drivetrain, driverController, false);
+        m_driveDutyCycle = new RunDutyCycleCommand(m_drivetrain, 0.10, 0);
+        m_resetFieldOrientedHeading = new ResetFieldOrientedHeading(m_drivetrain);
+        m_sysIDDriveRoutine = new DeferredCommand(m_drivetrain::getSysIDDriveRoutine, Set.of(m_drivetrain));
 
-    /* Intake */
-    Buttons.controller1_leftBumper.whileTrue(m_ToggleIntake);
-    Buttons.controller1_RightTrigger.whileTrue(m_OscillateIntake);
+        /* Intake */
+        m_ToggleIntake = new ToggleIntake(m_Intake);
+        m_OscillateIntake = new OscillateIntake(m_Intake);
 
-    // ==================
-    // Operator Controls
-    // ==================
+        /* Indexer */
+        m_spinStageOne = new SpinStageOne(m_Indexer, 0.2);
+        m_spinStageTwo = new SpinStageTwo(m_Indexer, 0.2);
 
-  }
+        /* Shooter */
+        m_ShootAtHub = new ShootAtHub(m_Shooter, m_Indexer);
 
-  public Command getAutonomousCommand() {
-    return null; // TODO: add autos
-  }
+        configureBindings();
+
+        m_drivetrain.setDefaultCommand(m_swerveDriveClosedLoop);
+    }
+
+    private void configureBindings() {
+
+        // ================
+        // Driver Controls
+        // ================
+
+        /* Drivetrain */
+        // Buttons.controller1_YButton.onTrue(m_sysIDDriveRoutine);
+        Buttons.controller1_minusButton.toggleOnTrue(m_resetFieldOrientedHeading);
+
+        /* Shooter */
+        Buttons.controller1_RightTrigger.whileTrue(m_ShootAtHub);
+
+        /* Intake */
+        Buttons.controller1_leftBumper.whileTrue(m_ToggleIntake);
+        Buttons.controller1_RightTrigger.whileTrue(m_OscillateIntake);
+
+        // ==================
+        // Operator Controls
+        // ==================
+
+    }
+
+    public Command getAutonomousCommand() {
+        return null; // TODO: add autos
+    }
 }

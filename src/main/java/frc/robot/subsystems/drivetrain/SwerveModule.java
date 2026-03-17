@@ -53,10 +53,10 @@ public class SwerveModule {
 
     private void setAngle(SwerveModuleState desiredState) {
         // Suppress jitter when nearly stopped
-        Rotation2d angle =
-            (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.DriveConstants.MAX_LINEAR_VELOCITY * 0.01))
-                ? lastAngle
-                : desiredState.angle;
+        Rotation2d angle = (Math
+                .abs(desiredState.speedMetersPerSecond) <= (Constants.DriveConstants.MAX_LINEAR_VELOCITY * 0.01))
+                        ? lastAngle
+                        : desiredState.angle;
         io.setAnglePosition(angle.getDegrees());
         lastAngle = angle;
     }

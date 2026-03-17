@@ -18,51 +18,51 @@ import frc.robot.subsystems.Drivetrain.Drivetrain;
 
 public class ShootAtHub extends Command {
 
-  private Shooter m_Shooter;
-  private Indexer m_Indexer;
-  private Drivetrain m_Drivetrain;
+    private Shooter m_Shooter;
+    private Indexer m_Indexer;
+    private Drivetrain m_Drivetrain;
 
-  private enum State {
-    PRESHOOT, SHOOTING
-  }
-
-  private State state;
-
-  /** Creates a new ShootAtHub. */
-  public ShootAtHub(Shooter shooter, Indexer indexer) {
-    m_Shooter = shooter;
-    m_Indexer = indexer;
-  }
-
-  @Override
-  public void initialize() {
-    m_Shooter.spinFlywheels(m_Shooter.getTargetPosition());
-  }
-
-  @Override
-  public void execute() {
-    
-    if (m_Shooter.atTargetSpeed() && m_Shooter.atTargetPosition() && m_Drivetrain.atTargetPose()) {
-      state = State.SHOOTING;
-    } else {
-      state = State.PRESHOOT;
+    private enum State {
+        PRESHOOT, SHOOTING
     }
 
-    switch (state) {
-      case PRESHOOT:
-        m_Shooter.spinFlywheels(m_Shooter.getHorizontalVelocity(0.5)); //TEMPORARY JUST TO GET IT TO BUILD!!!
-        m_Shooter.pivotShooter(m_Shooter.getTargetPosition());
-        // Drivetrain method to aim towards hub
-        
-        break;
-      case SHOOTING:
-        m_Indexer.runStageOneMotor(Constants.IndexerConstants.STAGE_ONE_INTAKE_SPEED);
-        m_Indexer.runStageTwoMotor(Constants.IndexerConstants.STAGE_TWO_INTAKE_SPEED);
-        break;
-    }
-  }
+    private State state;
 
-  @Override
+    /** Creates a new ShootAtHub. */
+    public ShootAtHub(Shooter shooter, Indexer indexer) {
+        m_Shooter = shooter;
+        m_Indexer = indexer;
+    }
+
+    @Override
+    public void initialize() {
+        m_Shooter.spinFlywheels(m_Shooter.getTargetPosition());
+    }
+
+    @Override
+    public void execute() {
+
+        if (m_Shooter.atTargetSpeed() && m_Shooter.atTargetPosition() && m_Drivetrain.atTargetPose()) {
+            state = State.SHOOTING;
+        } else {
+            state = State.PRESHOOT;
+        }
+
+        switch (state) {
+            case PRESHOOT:
+                m_Shooter.spinFlywheels(m_Shooter.getHorizontalVelocity(0.5)); // TEMPORARY JUST TO GET IT TO BUILD!!!
+                m_Shooter.pivotShooter(m_Shooter.getTargetPosition());
+                // Drivetrain method to aim towards hub
+
+                break;
+            case SHOOTING:
+                m_Indexer.runStageOneMotor(Constants.IndexerConstants.STAGE_ONE_INTAKE_SPEED);
+                m_Indexer.runStageTwoMotor(Constants.IndexerConstants.STAGE_TWO_INTAKE_SPEED);
+                break;
+        }
+    }
+
+    @Override
     public void end(boolean interrupted) {
 
     }

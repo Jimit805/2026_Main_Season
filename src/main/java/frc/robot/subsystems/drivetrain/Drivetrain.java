@@ -42,10 +42,10 @@ public class Drivetrain extends SubsystemBase {
 
     // For sim heading delta tracking
     private SwerveModulePosition[] lastModulePositions = new SwerveModulePosition[] {
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition()
+            new SwerveModulePosition(),
+            new SwerveModulePosition(),
+            new SwerveModulePosition(),
+            new SwerveModulePosition()
     };
 
     private final SwerveDrivePoseEstimator m_odometry;
@@ -63,10 +63,10 @@ public class Drivetrain extends SubsystemBase {
     public Drivetrain(SwerveModuleIO mod0IO, SwerveModuleIO mod1IO, SwerveModuleIO mod2IO, SwerveModuleIO mod3IO) {
 
         swerveMods = new SwerveModule[] {
-            new SwerveModule(mod0IO, 0),
-            new SwerveModule(mod1IO, 1),
-            new SwerveModule(mod2IO, 2),
-            new SwerveModule(mod3IO, 3)
+                new SwerveModule(mod0IO, 0),
+                new SwerveModule(mod1IO, 1),
+                new SwerveModule(mod2IO, 2),
+                new SwerveModule(mod3IO, 3)
         };
 
         m_gyro = new Pigeon2(Constants.DriveConstants.GYRO_ID);
@@ -74,7 +74,8 @@ public class Drivetrain extends SubsystemBase {
         gyroYawVelocitySignal = m_gyro.getAngularVelocityZWorld();
 
         resetModulesToAbsolute();
-        while (!m_gyro.isConnected()) {}
+        while (!m_gyro.isConnected()) {
+        }
         m_gyro.reset();
 
         m_field2d = new Field2d();
@@ -83,45 +84,45 @@ public class Drivetrain extends SubsystemBase {
         DriverStation.waitForDsConnection(60);
 
         resetHeading(Rotation2d.fromDegrees(
-            DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180));
+                DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180));
 
         m_odometry = new SwerveDrivePoseEstimator(
-            Constants.DriveConstants.kSwerveKinematics,
-            getHeading(),
-            getModulePositions(),
-            new Pose2d(0, 0, Rotation2d.fromDegrees(
-                DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0)),
-            VecBuilder.fill(0.1, 0.1, 0.1),
-            VecBuilder.fill(0.3, 0.3, 0.3));
+                Constants.DriveConstants.kSwerveKinematics,
+                getHeading(),
+                getModulePositions(),
+                new Pose2d(0, 0, Rotation2d.fromDegrees(
+                        DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0)),
+                VecBuilder.fill(0.1, 0.1, 0.1),
+                VecBuilder.fill(0.3, 0.3, 0.3));
 
         fieldOrientedOffset = Rotation2d.fromDegrees(
-            DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180);
+                DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180);
 
         PathPlannerLogging.setLogActivePathCallback(path -> {
             Logger.recordOutput("Odometry/Trajectory", path.toArray(new Pose2d[0]));
             addField2dTrajectory(path, "Trajectory");
         });
-        PathPlannerLogging.setLogTargetPoseCallback(pose ->
-            Logger.recordOutput("Odometry/Trajectory Setpoint", pose));
+        PathPlannerLogging.setLogTargetPoseCallback(pose -> Logger.recordOutput("Odometry/Trajectory Setpoint", pose));
 
         sysIDDriveRoutine = new SysIdRoutine(
-            new Config(),
-            new Mechanism(
-                voltage -> {
-                    for (SwerveModule mod : swerveMods) {
-                        mod.runCharacterization(voltage.in(Units.Volts));
-                    }
-                },
-                log -> {
-                    for (SwerveModule mod : swerveMods) {
-                        log.motor("Drive Motor " + mod.moduleNumber)
-                            .voltage(Units.Volts.of(mod.getDriveVoltage()))
-                            .linearPosition(Units.Meters.of(mod.getPosition().distanceMeters))
-                            .linearVelocity(Units.MetersPerSecond.of(mod.getState().speedMetersPerSecond))
-                            .linearAcceleration(Units.MetersPerSecondPerSecond.of(mod.getDriveAcceleration()));
-                    }
-                },
-                this));
+                new Config(),
+                new Mechanism(
+                        voltage -> {
+                            for (SwerveModule mod : swerveMods) {
+                                mod.runCharacterization(voltage.in(Units.Volts));
+                            }
+                        },
+                        log -> {
+                            for (SwerveModule mod : swerveMods) {
+                                log.motor("Drive Motor " + mod.moduleNumber)
+                                        .voltage(Units.Volts.of(mod.getDriveVoltage()))
+                                        .linearPosition(Units.Meters.of(mod.getPosition().distanceMeters))
+                                        .linearVelocity(Units.MetersPerSecond.of(mod.getState().speedMetersPerSecond))
+                                        .linearAcceleration(
+                                                Units.MetersPerSecondPerSecond.of(mod.getDriveAcceleration()));
+                            }
+                        },
+                        this));
 
         sysIDChooser = new SendableChooser<>();
         sysIDChooser.setDefaultOption("Quasistatic Forward", sysIDDriveRoutine.quasistatic(Direction.kForward));
@@ -142,7 +143,7 @@ public class Drivetrain extends SubsystemBase {
         BaseStatusSignal.refreshAll(gyroYawSignal, gyroYawVelocitySignal);
 
         Logger.recordOutput("Drivetrain/Current Command",
-            getCurrentCommand() == null ? "Nothing" : getCurrentCommand().getName());
+                getCurrentCommand() == null ? "Nothing" : getCurrentCommand().getName());
     }
 
     /**
@@ -156,15 +157,15 @@ public class Drivetrain extends SubsystemBase {
         Rotation2d rotationWithOffset = getHeading().minus(fieldOrientedOffset);
 
         SwerveModuleState[] states = Constants.DriveConstants.kSwerveKinematics.toSwerveModuleStates(
-            ChassisSpeeds.discretize(
-                isFieldRelative
-                    ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                        transform.getX(), transform.getY(),
-                        transform.getRotation().getRadians(), rotationWithOffset)
-                    : new ChassisSpeeds(
-                        transform.getX(), transform.getY(),
-                        transform.getRotation().getRadians()),
-                0.02));
+                ChassisSpeeds.discretize(
+                        isFieldRelative
+                                ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                        transform.getX(), transform.getY(),
+                                        transform.getRotation().getRadians(), rotationWithOffset)
+                                : new ChassisSpeeds(
+                                        transform.getX(), transform.getY(),
+                                        transform.getRotation().getRadians()),
+                        0.02));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.DriveConstants.MAX_LINEAR_VELOCITY);
         runSetpoints(states, isOpenLoop);
@@ -174,20 +175,20 @@ public class Drivetrain extends SubsystemBase {
         m_odometry.update(getHeading(), getModulePositions());
 
         // Generic vision update — add limelight names as needed
-        for (String limelightName : new String[] {"limelight"}) { // TODO: Need to find limelight names
+        for (String limelightName : new String[] { "limelight" }) { // TODO: Need to find limelight names
             LimelightHelpers.SetRobotOrientation(limelightName, getHeading().getDegrees(), 0, 0, 0, 0, 0);
-            LimelightHelpers.PoseEstimate estimate =
-                LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
+            LimelightHelpers.PoseEstimate estimate = LimelightHelpers
+                    .getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
 
             if (estimate != null && estimate.tagCount > 0) {
                 Translation3d tagPos = LimelightHelpers
-                    .getTargetPose3d_RobotSpace(limelightName).getTranslation();
+                        .getTargetPose3d_RobotSpace(limelightName).getTranslation();
 
                 // Only trust vision within 3.5m of the target tag
                 if (Math.hypot(tagPos.getX(), tagPos.getZ()) <= 3.5) {
                     m_odometry.addVisionMeasurement(
-                        new Pose2d(estimate.pose.getX(), estimate.pose.getY(), getHeading()),
-                        estimate.timestampSeconds);
+                            new Pose2d(estimate.pose.getX(), estimate.pose.getY(), getHeading()),
+                            estimate.timestampSeconds);
                 }
             }
         }
@@ -261,34 +262,34 @@ public class Drivetrain extends SubsystemBase {
     public void resetFieldOrientedHeading() {
         fieldOrientedOffset = getHeading().minus(Rotation2d.fromDegrees(180));
         resetHeading(Rotation2d.fromDegrees(
-            DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180));
+                DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180));
     }
 
     public void reverseFieldOrientedHeading() {
         fieldOrientedOffset = getHeading();
         resetHeading(Rotation2d.fromDegrees(
-            DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
+                DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
     }
 
     @AutoLogOutput(key = "Drivetrain/Heading")
     public Rotation2d getHeading() {
         if (RobotBase.isReal()) {
             return Rotation2d.fromDegrees(
-                MathUtil.inputModulus(gyroYawSignal.getValue().in(Units.Degrees) - 180, 0, 360));
+                    MathUtil.inputModulus(gyroYawSignal.getValue().in(Units.Degrees) - 180, 0, 360));
         } else {
             SwerveModulePosition[] modulePositions = getModulePositions();
             SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
 
             for (SwerveModule mod : swerveMods) {
                 moduleDeltas[mod.moduleNumber] = new SwerveModulePosition(
-                    modulePositions[mod.moduleNumber].distanceMeters
-                        - lastModulePositions[mod.moduleNumber].distanceMeters,
-                    modulePositions[mod.moduleNumber].angle);
+                        modulePositions[mod.moduleNumber].distanceMeters
+                                - lastModulePositions[mod.moduleNumber].distanceMeters,
+                        modulePositions[mod.moduleNumber].angle);
                 lastModulePositions[mod.moduleNumber] = modulePositions[mod.moduleNumber];
             }
 
             simHeading = simHeading.plus(
-                new Rotation2d(Constants.DriveConstants.kSwerveKinematics.toTwist2d(moduleDeltas).dtheta));
+                    new Rotation2d(Constants.DriveConstants.kSwerveKinematics.toTwist2d(moduleDeltas).dtheta));
             return simHeading;
         }
     }
@@ -326,9 +327,9 @@ public class Drivetrain extends SubsystemBase {
 
     public void runChassisSpeeds(ChassisSpeeds speeds) {
         runSetpoints(
-            Constants.DriveConstants.kSwerveKinematics.toSwerveModuleStates(
-                ChassisSpeeds.discretize(speeds, 0.02)),
-            false);
+                Constants.DriveConstants.kSwerveKinematics.toSwerveModuleStates(
+                        ChassisSpeeds.discretize(speeds, 0.02)),
+                false);
     }
 
     public void runSetpoints(SwerveModuleState[] states, boolean isOpenLoop) {

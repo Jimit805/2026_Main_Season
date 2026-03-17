@@ -17,16 +17,18 @@ public class PolarJoystickFilter {
     }
 
     public double[] toPolar(double rawX, double rawY) {
-        if (rawX == 0 && rawY == 0) return new double[] {0, 0};
+        if (rawX == 0 && rawY == 0)
+            return new double[] { 0, 0 };
 
-        double[] polar = {Math.atan2(rawY, rawX), Math.sqrt(rawX * rawX + rawY * rawY)};
+        double[] polar = { Math.atan2(rawY, rawX), Math.sqrt(rawX * rawX + rawY * rawY) };
         lastThetaValue = polar[0];
-        if (polar[1] > 1) polar[1] = 1;
+        if (polar[1] > 1)
+            polar[1] = 1;
         return polar;
     }
 
     public double[] withDead(double[] polar) {
-        return polar[1] < deadzone ? new double[] {lastThetaValue, 0} : polar;
+        return polar[1] < deadzone ? new double[] { lastThetaValue, 0 } : polar;
     }
 
     public double withCurve(double raw) {
@@ -40,6 +42,6 @@ public class PolarJoystickFilter {
         filtered[1] = smoothing * lastInput + (1 - smoothing) * filtered[1];
         lastInput = filtered[1];
         double[] signal = withDead(filtered);
-        return new double[] {Math.cos(signal[0]) * signal[1], Math.sin(signal[0]) * signal[1]};
+        return new double[] { Math.cos(signal[0]) * signal[1], Math.sin(signal[0]) * signal[1] };
     }
 }

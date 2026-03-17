@@ -12,15 +12,15 @@ import frc.slicelibs.math.Conversions;
 
 public class SimSwerveModuleIO implements SwerveModuleIO {
 
-    private final DCMotorSim driveMotor = new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.025, Constants.DriveConstants.DRIVE_GEAR_RATIO),
-        DCMotor.getKrakenX60(1));
-    private final DCMotorSim angleMotor = new DCMotorSim(
-        LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX44(1), 0.004, Constants.DriveConstants.ANGLE_GEAR_RATIO),
-        DCMotor.getKrakenX44(1));
+    private final DCMotorSim driveMotor = new DCMotorSim(LinearSystemId.createDCMotorSystem(
+            DCMotor.getKrakenX60(1), 0.025, Constants.DriveConstants.DRIVE_GEAR_RATIO),
+            DCMotor.getKrakenX60(1));
+    private final DCMotorSim angleMotor = new DCMotorSim(LinearSystemId.createDCMotorSystem(
+            DCMotor.getKrakenX44(1), 0.004, Constants.DriveConstants.ANGLE_GEAR_RATIO),
+            DCMotor.getKrakenX44(1));
 
-    private final SimpleMotorFeedforward driveFeedforward =
-        new SimpleMotorFeedforward(0.0, Constants.DriveConstants.DRIVE_KV);
+    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(0.0,
+            Constants.DriveConstants.DRIVE_KV);
     private final PIDController drivePID = new PIDController(0.1, 0.0, 0.0);
     private final PIDController anglePID = new PIDController(0.5, 0.0, 0.0);
 
@@ -37,38 +37,34 @@ public class SimSwerveModuleIO implements SwerveModuleIO {
         driveMotor.update(0.02);
         angleMotor.update(0.02);
 
-        inputs.drivePositionMeters =
-            driveMotor.getAngularPositionRotations() * Constants.DriveConstants.WHEEL_CIRCUMFERENCE;
-        inputs.driveVelocityMetersPerSec =
-            Conversions.RPMToMPS(driveMotor.getAngularVelocityRPM(), Constants.DriveConstants.WHEEL_CIRCUMFERENCE);
+        inputs.drivePositionMeters = driveMotor.getAngularPositionRotations()
+                * Constants.DriveConstants.WHEEL_CIRCUMFERENCE;
+        inputs.driveVelocityMetersPerSec = Conversions.RPMToMPS(driveMotor.getAngularVelocityRPM(),
+                Constants.DriveConstants.WHEEL_CIRCUMFERENCE);
         inputs.driveAppliedVolts = driveAppliedVolts;
         inputs.driveCurrentAmps = Math.abs(driveMotor.getCurrentDrawAmps());
 
-        inputs.absoluteAnglePosition =
-            new Rotation2d(angleMotor.getAngularPositionRad()).plus(turnAbsoluteInitPosition);
-        inputs.integratedAnglePosition =
-            new Rotation2d(angleMotor.getAngularPositionRad());
-        inputs.angleVelocityDegreesPerSec =
-            edu.wpi.first.math.util.Units.radiansToDegrees(angleMotor.getAngularVelocityRadPerSec());
+        inputs.absoluteAnglePosition = new Rotation2d(angleMotor.getAngularPositionRad())
+                .plus(turnAbsoluteInitPosition);
+        inputs.integratedAnglePosition = new Rotation2d(angleMotor.getAngularPositionRad());
+        inputs.angleVelocityDegreesPerSec = edu.wpi.first.math.util.Units
+                .radiansToDegrees(angleMotor.getAngularVelocityRadPerSec());
         inputs.angleAppliedVolts = angleAppliedVolts;
         inputs.angleCurrentAmps = Math.abs(angleMotor.getCurrentDrawAmps());
     }
 
     @Override
     public void setDriveVelocity(double velocity) {
-        driveAppliedVolts = MathUtil.clamp(
-            drivePID.calculate(
-                Conversions.RPMToMPS(driveMotor.getAngularVelocityRPM(), Constants.DriveConstants.WHEEL_CIRCUMFERENCE),
-                velocity) + driveFeedforward.calculate(velocity),
-            -12, 12);
+        driveAppliedVolts = MathUtil.clamp(drivePID.calculate(Conversions.RPMToMPS(driveMotor.getAngularVelocityRPM(),
+                Constants.DriveConstants.WHEEL_CIRCUMFERENCE), velocity) + driveFeedforward.calculate(velocity), -12,
+                12);
         driveMotor.setInputVoltage(driveAppliedVolts);
     }
 
     @Override
     public void setAnglePosition(double degrees) {
         angleAppliedVolts = MathUtil.clamp(
-            anglePID.calculate(angleMotor.getAngularPositionRotations() * 360, degrees),
-            -12.0, 12.0);
+                anglePID.calculate(angleMotor.getAngularPositionRotations() * 360, degrees), -12.0, 12.0);
         angleMotor.setInputVoltage(angleAppliedVolts);
     }
 

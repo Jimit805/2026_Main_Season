@@ -27,7 +27,7 @@ public class DriveCommand extends Command {
         m_isOpenLoop = isOpenLoop;
 
         translationFilter = new PolarJoystickFilter(new JoystickFilterConfig(0.04, 0.9, 1.0, 1.0));
-        rotationFilter    = new PolarJoystickFilter(new JoystickFilterConfig(0.04, 0.6, 1.0, 1.0));
+        rotationFilter = new PolarJoystickFilter(new JoystickFilterConfig(0.04, 0.6, 1.0, 1.0));
     }
 
     @Override
@@ -39,27 +39,25 @@ public class DriveCommand extends Command {
     public void execute() {
         // Left stick -> translation, right stick X -> rotation
         double[] translation = translationFilter.filter(
-            -m_driverController.getRawAxis(0),  // left stick X (strafe)
-            -m_driverController.getRawAxis(1)); // left stick Y (forward)
+                -m_driverController.getRawAxis(0), // left stick X (strafe)
+                -m_driverController.getRawAxis(1)); // left stick Y (forward)
 
         double translationX = translation[0] * Constants.DriveConstants.MAX_LINEAR_VELOCITY;
         double translationY = translation[1] * Constants.DriveConstants.MAX_LINEAR_VELOCITY;
 
         double rotation = rotationFilter.filter(-m_driverController.getRawAxis(4), 0)[0]
-            * Constants.DriveConstants.MAX_ANGULAR_VELOCITY;
+                * Constants.DriveConstants.MAX_ANGULAR_VELOCITY;
 
         // Hold left bumper for robot-relative drive at half speed
         m_isFieldRelative = !Buttons.controller1_leftBumper.getAsBoolean();
         if (!m_isFieldRelative) {
             translationX *= 0.5;
             translationY *= 0.5;
-            rotation     *= 0.5;
+            rotation *= 0.5;
         }
 
-        m_drivetrain.drive(
-            new Transform2d(new Translation2d(translationX, translationY), new Rotation2d(rotation)),
-            m_isOpenLoop,
-            m_isFieldRelative);
+        m_drivetrain.drive(new Transform2d(new Translation2d(translationX, translationY), new Rotation2d(rotation)),
+                m_isOpenLoop, m_isFieldRelative);
     }
 
     @Override

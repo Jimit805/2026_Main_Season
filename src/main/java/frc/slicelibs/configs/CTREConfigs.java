@@ -10,7 +10,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
 
-
 public class CTREConfigs {
 
     public final TalonFXConfiguration m_swerveDriveConfigs = new TalonFXConfiguration();
@@ -24,7 +23,6 @@ public class CTREConfigs {
     public final TalonFXConfiguration rollerConfigs = new TalonFXConfiguration();
 
     public final TalonFXConfiguration indexerConfigs = new TalonFXConfiguration();
-
 
     public CTREConfigs() {
         configureSwerve();

@@ -19,61 +19,68 @@ import frc.robot.Constants;
 
 public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
 
-  private TalonFX rotationMotor;
+    private TalonFX rotationMotor;
 
-  /** Creates a new Intake. */
-  public Intake() {
-    // Initialize the Positional Subsystem and motors controlling it
-    super(
-      new int[] { Constants.IntakeConstants.EXTENDER_MOTOR_ID },
-      new boolean[] { false },
-      Constants.IntakeConstants.EXTENDER_KP, Constants.IntakeConstants.EXTENDER_KI, Constants.IntakeConstants.EXTENDER_KP, Constants.IntakeConstants.EXTENDER_KG,
-      Constants.IntakeConstants.EXTENDER_RATIO,
-      GravityTypeValue.Elevator_Static,
-      Constants.IntakeConstants.POSITION_CONVERSION_FACTOR,
-      Constants.IntakeConstants.VELOCITY_CONVERSION_FACTOR,
-      Constants.CTRE_CONFIGS.extenderConfigs
-    );
-    setEncoderPosition(0);
-    
-    // Non-positional motor for spinning the roller
-    rotationMotor = new TalonFX(Constants.IntakeConstants.ROTATION_MOTOR_ID);
+    /** Creates a new Intake. */
+    public Intake() {
+        // Initialize the Positional Subsystem and motors controlling it
+        super(
+                new int[] { Constants.IntakeConstants.EXTENDER_MOTOR_ID },
+                new boolean[] { false },
+                Constants.IntakeConstants.EXTENDER_KP, Constants.IntakeConstants.EXTENDER_KI,
+                Constants.IntakeConstants.EXTENDER_KP, Constants.IntakeConstants.EXTENDER_KG,
+                Constants.IntakeConstants.EXTENDER_RATIO,
+                GravityTypeValue.Elevator_Static,
+                Constants.IntakeConstants.POSITION_CONVERSION_FACTOR,
+                Constants.IntakeConstants.VELOCITY_CONVERSION_FACTOR,
+                Constants.CTRE_CONFIGS.extenderConfigs);
+        setEncoderPosition(0);
 
-    // Set motor configs for the roller motor
-    rotationMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.rollerConfigs);
+        // Non-positional motor for spinning the roller
+        rotationMotor = new TalonFX(Constants.IntakeConstants.ROTATION_MOTOR_ID);
 
-  }
+        // Set motor configs for the roller motor
+        rotationMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.rollerConfigs);
 
-  /**
-   * Sets speed of rotation motor
-   * @param speed speed to set the motor to (-1.0 to 1.0)
-   */
-  public void spinRoller(double speed) {
-    rotationMotor.setControl(new VelocityDutyCycle(speed).withEnableFOC(true));
-  }
+    }
 
-  public void stopRoller() {
-    rotationMotor.stopMotor();
-  }
-  /**
-   * Moves the intake to the set position
-   * @param position position to have the intake move to
-   */
-  public void moveIntakeToPosition(double position) {
-    setPosition(position);
-  }
-  
-  public boolean isStowed() { return (getExtenderPosition() < .127); } //5" bumper tolerance
+    /**
+     * Sets speed of rotation motor
+     * 
+     * @param speed speed to set the motor to (-1.0 to 1.0)
+     */
+    public void spinRoller(double speed) {
+        rotationMotor.setControl(new VelocityDutyCycle(speed).withEnableFOC(true));
+    }
 
-  public boolean isDeployed() { return (getExtenderPosition() > Constants.IntakeConstants.DEPLOYED_POSITION - 0.0127); } // 0.5" tolerance
+    public void stopRoller() {
+        rotationMotor.stopMotor();
+    }
 
-  public double getExtenderPosition(){
-    return getPositions()[0];
-  }
+    /**
+     * Moves the intake to the set position
+     * 
+     * @param position position to have the intake move to
+     */
+    public void moveIntakeToPosition(double position) {
+        setPosition(position);
+    }
 
-  @Override
-  public void periodic() {
-    SmartDashboard.putNumber("Intake extender position: ", getExtenderPosition());
-    // This method will be called once per scheduler run
-  }
+    public boolean isStowed() {
+        return (getExtenderPosition() < .127);
+    } // 5" bumper tolerance
+
+    public boolean isDeployed() {
+        return (getExtenderPosition() > Constants.IntakeConstants.DEPLOYED_POSITION - 0.0127);
+    } // 0.5" tolerance
+
+    public double getExtenderPosition() {
+        return getPositions()[0];
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Intake extender position: ", getExtenderPosition());
+        // This method will be called once per scheduler run
+    }
 }
