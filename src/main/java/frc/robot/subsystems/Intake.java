@@ -29,7 +29,7 @@ public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
                 new boolean[] { false },
                 Constants.IntakeConstants.EXTENDER_KP,
                 Constants.IntakeConstants.EXTENDER_KI,
-                Constants.IntakeConstants.EXTENDER_KP,
+                Constants.IntakeConstants.EXTENDER_KD,
                 Constants.IntakeConstants.EXTENDER_KG,
                 Constants.IntakeConstants.EXTENDER_RATIO,
                 GravityTypeValue.Elevator_Static,

@@ -38,7 +38,7 @@ public class ShootAtHub extends Command {
     @Override
     public void initialize() {
         state = State.PRESHOOT;
-        m_Shooter.spinFlywheels(m_Shooter.getTargetPosition());
+        m_Shooter.spinFlywheels(m_Shooter.getTargetVelocity());
     }
 
     @Override
