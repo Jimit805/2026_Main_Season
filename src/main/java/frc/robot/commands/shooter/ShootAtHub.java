@@ -32,10 +32,12 @@ public class ShootAtHub extends Command {
     public ShootAtHub(Shooter shooter, Indexer indexer) {
         m_Shooter = shooter;
         m_Indexer = indexer;
+        addRequirements(m_Shooter, m_Indexer);
     }
 
     @Override
     public void initialize() {
+        state = State.PRESHOOT;
         m_Shooter.spinFlywheels(m_Shooter.getTargetPosition());
     }
 
@@ -50,9 +52,8 @@ public class ShootAtHub extends Command {
 
         switch (state) {
             case PRESHOOT:
-                m_Shooter.spinFlywheels(m_Shooter.getHorizontalVelocity(0.5)); // TEMPORARY JUST TO GET IT TO BUILD!!!
+                m_Shooter.spinFlywheels(m_Shooter.getTargetVelocity());
                 m_Shooter.pivotShooter(m_Shooter.getTargetPosition());
-                // Drivetrain method to aim towards hub
 
                 break;
             case SHOOTING:
@@ -64,6 +65,13 @@ public class ShootAtHub extends Command {
 
     @Override
     public void end(boolean interrupted) {
+        m_Shooter.spinFlywheels(0);
+        m_Shooter.pivotShooter(Constants.ShooterConstants.SHOOTER_STOW);
+        m_Indexer.stopAll();
+    }
 
+    @Override
+    public boolean isFinished() {
+        return false;
     }
 }

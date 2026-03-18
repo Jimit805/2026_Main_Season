@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -24,11 +25,12 @@ public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
     /** Creates a new Intake. */
     public Intake() {
         // Initialize the Positional Subsystem and motors controlling it
-        super(
-                new int[] { Constants.IntakeConstants.EXTENDER_MOTOR_ID },
+        super(new int[] { Constants.IntakeConstants.EXTENDER_MOTOR_ID },
                 new boolean[] { false },
-                Constants.IntakeConstants.EXTENDER_KP, Constants.IntakeConstants.EXTENDER_KI,
-                Constants.IntakeConstants.EXTENDER_KP, Constants.IntakeConstants.EXTENDER_KG,
+                Constants.IntakeConstants.EXTENDER_KP,
+                Constants.IntakeConstants.EXTENDER_KI,
+                Constants.IntakeConstants.EXTENDER_KP,
+                Constants.IntakeConstants.EXTENDER_KG,
                 Constants.IntakeConstants.EXTENDER_RATIO,
                 GravityTypeValue.Elevator_Static,
                 Constants.IntakeConstants.POSITION_CONVERSION_FACTOR,
@@ -50,7 +52,7 @@ public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
      * @param speed speed to set the motor to (-1.0 to 1.0)
      */
     public void spinRoller(double speed) {
-        rotationMotor.setControl(new VelocityDutyCycle(speed).withEnableFOC(true));
+        rotationMotor.setControl(new DutyCycleOut(speed).withEnableFOC(true));
     }
 
     public void stopRoller() {

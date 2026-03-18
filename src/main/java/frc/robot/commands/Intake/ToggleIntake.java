@@ -23,8 +23,10 @@ public class ToggleIntake extends Command {
     /**
      * Creates a new intake.
      */
-    public ToggleIntake(Intake intake) {
+    public ToggleIntake(Intake intake, Indexer indexer) {
         m_intake = intake;
+        m_indexer = indexer;
+        addRequirements(m_intake, m_indexer);
     }
 
     // Called when the command is initially scheduled.
@@ -70,12 +72,13 @@ public class ToggleIntake extends Command {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-
+        m_intake.stopRoller();
+        m_indexer.stopAll();
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return state == State.DONE;
     }
 }

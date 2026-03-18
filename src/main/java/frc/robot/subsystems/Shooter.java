@@ -28,10 +28,11 @@ public class Shooter extends TalonFXPositionalSubsystem {
     /** Creates a new Shooter. */
     public Shooter() {
 
-        super(
-                new int[] { Constants.ShooterConstants.PIVOT_MOTOR_ID },
+        super(new int[] { Constants.ShooterConstants.PIVOT_MOTOR_ID },
                 new boolean[] { true },
-                Constants.ShooterConstants.AIM_KP, Constants.ShooterConstants.AIM_KI, Constants.ShooterConstants.AIM_KD,
+                Constants.ShooterConstants.AIM_KP,
+                Constants.ShooterConstants.AIM_KI,
+                Constants.ShooterConstants.AIM_KD,
                 Constants.ShooterConstants.AIM_KG,
                 Constants.ShooterConstants.PIVOT_GEAR_RATIO,
                 GravityTypeValue.Arm_Cosine,

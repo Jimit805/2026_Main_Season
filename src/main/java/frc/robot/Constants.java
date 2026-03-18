@@ -56,8 +56,8 @@ public final class Constants {
         public static final double DRIVE_BASE_RADIUS = Math.hypot(WHEEL_BASE / 2, TRACK_WIDTH / 2);
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.95);
         public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
-        public static final double MASS = 65; // TODO: Find mass (kg)
-        public static final double MOMENT_OF_INERTIA = 6; // TODO: Find MOI (kg*m^2)
+        public static final double MASS = 65;
+        public static final double MOMENT_OF_INERTIA = 6;
         public static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
 
         public static final SwerveDriveKinematics kSwerveKinematics = new SwerveDriveKinematics(
@@ -103,13 +103,14 @@ public final class Constants {
 
         /* Current Limits */
         public static final double DRIVE_STATOR_CURRENT_LIMIT = 80;
-        public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 40;
+        public static final double DRIVE_SUPPLY_CURRENT_LIMIT = 60;
+
         public static final double TURN_STATOR_CURRENT_LIMIT = 40;
         public static final double TURN_SUPPLY_CURRENT_LIMIT = 30;
 
         /* Motor Inverts */
         public static final boolean DRIVE_MOTOR_INVERT = false;
-        public static final boolean TURN_MOTOR_INVERT = true;
+        public static final boolean TURN_MOTOR_INVERT = false;
 
         /* CANcoder direction */
         public static final com.ctre.phoenix6.signals.SensorDirectionValue ABSOLUTE_ENCODER_INVERT = com.ctre.phoenix6.signals.SensorDirectionValue.CounterClockwise_Positive;
@@ -127,19 +128,19 @@ public final class Constants {
         /* Per-module constants (drive ID, turn ID, CANcoder ID, angle offset) */
         public static final frc.slicelibs.configs.SwerveModuleConstants FRONT_LEFT_MODULE = new frc.slicelibs.configs.SwerveModuleConstants(
                 FRONT_LEFT_DRIVE_ID, FRONT_LEFT_TURN_ID, FRONT_LEFT_ENCODER_ID,
-                Rotation2d.fromDegrees(0.0)); // TODO: Set real offsets
+                Rotation2d.fromRotations(0.513672));
 
         public static final frc.slicelibs.configs.SwerveModuleConstants FRONT_RIGHT_MODULE = new frc.slicelibs.configs.SwerveModuleConstants(
                 FRONT_RIGHT_DRIVE_ID, FRONT_RIGHT_TURN_ID, FRONT_RIGHT_ENCODER_ID,
-                Rotation2d.fromDegrees(0.0)); // TODO: Set real offsets
+                Rotation2d.fromRotations(0.479492));
 
         public static final frc.slicelibs.configs.SwerveModuleConstants BACK_RIGHT_MODULE = new frc.slicelibs.configs.SwerveModuleConstants(
                 BACK_RIGHT_DRIVE_ID, BACK_RIGHT_TURN_ID, BACK_RIGHT_ENCODER_ID,
-                Rotation2d.fromDegrees(0.0)); // TODO: Set real offsets
+                Rotation2d.fromRotations(0.479492));
 
         public static final frc.slicelibs.configs.SwerveModuleConstants BACK_LEFT_MODULE = new frc.slicelibs.configs.SwerveModuleConstants(
                 BACK_LEFT_DRIVE_ID, BACK_LEFT_TURN_ID, BACK_LEFT_ENCODER_ID,
-                Rotation2d.fromDegrees(0.0)); // TODO: Set real offsets
+                Rotation2d.fromRotations(0.520996));
 
     }
 
@@ -155,24 +156,22 @@ public final class Constants {
         public static final int EXTENDER_MOTOR_ID = 5;
 
         // Positional subsystem constants
-        public static final double EXTENDER_KP = 0.2;
+        public static final double EXTENDER_KP = 15.0; // Tune this
         public static final double EXTENDER_KI = 0.0;
         public static final double EXTENDER_KD = 0.0;
         public static final double EXTENDER_KG = 0.0; // FF for gravity, most likely don't need this
         public static final double EXTENDER_RATIO = 50.0 / 9.0; // 5.55 repeating
         public static final int EXTENDER_STATOR_CURRENT_LIMIT = 60;
         public static final int EXTENDER_SUPPLY_CURRENT_LIMIT = 40;
-        public static final double POSITION_CONVERSION_FACTOR = (0.0254 * Math.PI) * EXTENDER_RATIO; // (pitch diameter
-                                                                                                     // of pinion * pi)
-                                                                                                     // * ratio
+        public static final double POSITION_CONVERSION_FACTOR = (Units.inchesToMeters(1.0) * Math.PI) * EXTENDER_RATIO; // (pitch diameter of pinion * pi) * ratio
         public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR; // meters per second
 
-        public static final double STOWED_POSITION = 0.0; // Meters
-        public static final double DEPLOYED_POSITION = 0.2921; // Meters
-        public static final double OSCILLATION_AMOUNT = .02; // Meters; how far it goes out
-        public static final double OSCILLATION_DIFF = .01; // Meters; how much further it goes in
+        public static final double STOWED_POSITION = Units.inchesToMeters(0.0);
+        public static final double DEPLOYED_POSITION = Units.inchesToMeters(11.5);
+        public static final double OSCILLATION_AMOUNT = Units.inchesToMeters(0.75); // How far it goes out
+        public static final double OSCILLATION_DIFF = Units.inchesToMeters(0.25); // How much further it goes in
         // Roller motor constants
-        public static final double ROLLER_SPEED = 0.8;
+        public static final double ROLLER_SPEED = 0.8; // Tune this
         public static final double ROLLER_RETRACT_SPEED = 0.0;
         public static final double ROLLER_GEAR_RATIO = 2.0;
         public static final int ROLLER_STATOR_CURRENT_LIMIT = 40;
@@ -186,7 +185,7 @@ public final class Constants {
         public static final int RIGHT_SHOOTER_MOTOR_ID = 2;
 
         // TODO: tune PIDs
-        public static final double FLYWHEEL_KP = 0.05;
+        public static final double FLYWHEEL_KP = 0.35;
         public static final double FLYWHEEL_KI = 0.0;
         public static final double FLYWHEEL_KD = 0.0;
         public static final double FLYWHEEL_KS = 0.0;

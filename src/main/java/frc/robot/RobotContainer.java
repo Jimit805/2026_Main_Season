@@ -106,7 +106,7 @@ public class RobotContainer {
         m_sysIDDriveRoutine = new DeferredCommand(m_drivetrain::getSysIDDriveRoutine, Set.of(m_drivetrain));
 
         /* Intake */
-        m_ToggleIntake = new ToggleIntake(m_Intake);
+        m_ToggleIntake = new ToggleIntake(m_Intake, m_Indexer);
         m_OscillateIntake = new OscillateIntake(m_Intake);
 
         /* Indexer */
@@ -129,13 +129,13 @@ public class RobotContainer {
 
         /* Drivetrain */
         // Buttons.controller1_YButton.onTrue(m_sysIDDriveRoutine);
-        Buttons.controller1_minusButton.toggleOnTrue(m_resetFieldOrientedHeading);
+        Buttons.controller1_minusButton.onTrue(m_resetFieldOrientedHeading);
 
         /* Shooter */
         Buttons.controller1_RightTrigger.whileTrue(m_ShootAtHub);
 
         /* Intake */
-        Buttons.controller1_leftBumper.whileTrue(m_ToggleIntake);
+        Buttons.controller1_leftBumper.onTrue(m_ToggleIntake);
         Buttons.controller1_RightTrigger.whileTrue(m_OscillateIntake);
 
         // ==================

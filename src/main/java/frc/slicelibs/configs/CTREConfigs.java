@@ -76,20 +76,13 @@ public class CTREConfigs {
         shooterConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
         // Pivot motor configurations
-        pivotConfigs.Slot0.kP = Constants.ShooterConstants.AIM_KP;
-        pivotConfigs.Slot0.kI = Constants.ShooterConstants.AIM_KI;
-        pivotConfigs.Slot0.kD = Constants.ShooterConstants.AIM_KD;
-        pivotConfigs.Feedback.SensorToMechanismRatio = Constants.ShooterConstants.PIVOT_GEAR_RATIO;
-        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        pivotConfigs.CurrentLimits.StatorCurrentLimit = Constants.ShooterConstants.PIVOT_STATOR_CURRENT_LIMIT;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimit = Constants.ShooterConstants.PIVOT_SUPPLY_CURRENT_LIMIT;
     }
 
     private void configureIntake() {
         // Extender motor configurations
-        extenderConfigs.Slot0.kP = Constants.IntakeConstants.EXTENDER_KP;
-        extenderConfigs.Slot0.kI = Constants.IntakeConstants.EXTENDER_KI;
-        extenderConfigs.Slot0.kD = Constants.IntakeConstants.EXTENDER_KD;
-        extenderConfigs.Slot0.kG = Constants.IntakeConstants.EXTENDER_KG;
-        extenderConfigs.Feedback.SensorToMechanismRatio = Constants.IntakeConstants.EXTENDER_RATIO;
         extenderConfigs.CurrentLimits.StatorCurrentLimit = Constants.IntakeConstants.EXTENDER_STATOR_CURRENT_LIMIT;
         extenderConfigs.CurrentLimits.SupplyCurrentLimit = Constants.IntakeConstants.EXTENDER_SUPPLY_CURRENT_LIMIT;
         extenderConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;

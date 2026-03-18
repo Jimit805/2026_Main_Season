@@ -4,9 +4,9 @@
 
 package frc.robot.commands.Intake;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.Intake;
-import edu.wpi.first.wpilibj2.command.Command;
 
 public class OscillateIntake extends Command {
 
@@ -24,13 +24,14 @@ public class OscillateIntake extends Command {
      */
     public OscillateIntake(Intake intake) {
         m_intake = intake;
+        addRequirements(m_intake);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         targetPosition = m_intake.getExtenderPosition();
-        state = m_intake.isDeployed() ? State.EXTENDING : State.RETRACTING;
+        state = m_intake.isDeployed() ? State.RETRACTING : State.EXTENDING;
         m_intake.spinRoller(Constants.IntakeConstants.ROLLER_RETRACT_SPEED);
     }
 
@@ -41,19 +42,22 @@ public class OscillateIntake extends Command {
             case EXTENDING:
                 m_intake.moveIntakeToPosition(targetPosition);
                 if (m_intake.getExtenderPosition() > targetPosition - .0075
-                        && m_intake.getExtenderPosition() < targetPosition + .0075)
+                        && m_intake.getExtenderPosition() < targetPosition + .0075) {
                     targetPosition = targetPosition <= Constants.IntakeConstants.STOWED_POSITION
                             ? Constants.IntakeConstants.STOWED_POSITION + Constants.IntakeConstants.OSCILLATION_AMOUNT
                             : targetPosition - (Constants.IntakeConstants.OSCILLATION_AMOUNT
                                     + Constants.IntakeConstants.OSCILLATION_DIFF);
-                state = State.RETRACTING;
+                    state = State.RETRACTING;
+                }
                 break;
+
             case RETRACTING:
                 m_intake.moveIntakeToPosition(targetPosition);
                 if (m_intake.getExtenderPosition() > targetPosition - .0075
-                        && m_intake.getExtenderPosition() < targetPosition + .0075)
-                    targetPosition += (Constants.IntakeConstants.OSCILLATION_AMOUNT);
-                state = State.EXTENDING;
+                        && m_intake.getExtenderPosition() < targetPosition + .0075) {
+                    targetPosition += Constants.IntakeConstants.OSCILLATION_AMOUNT;
+                    state = State.EXTENDING;
+                }
                 break;
         }
     }
@@ -62,6 +66,7 @@ public class OscillateIntake extends Command {
     @Override
     public void end(boolean interrupted) {
         m_intake.stopRoller();
+        m_intake.moveIntakeToPosition(Constants.IntakeConstants.STOWED_POSITION);
     }
 
     // Returns true when the command should end.

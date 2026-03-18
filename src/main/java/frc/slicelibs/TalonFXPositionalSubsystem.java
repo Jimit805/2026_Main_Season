@@ -81,9 +81,9 @@ public class TalonFXPositionalSubsystem extends SubsystemBase {
             } else {
                 configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
             }
-            configs.Slot0.kP = kP * sensorToMechRatio;
-            configs.Slot0.kI = kI * sensorToMechRatio;
-            configs.Slot0.kD = kD * sensorToMechRatio;
+            configs.Slot0.kP = kP;
+            configs.Slot0.kI = kI;
+            configs.Slot0.kD = kD;
             configs.Slot0.kG = kG;
             configs.Slot0.GravityType = gravityType;
             configs.Feedback.SensorToMechanismRatio = sensorToMechRatio;
