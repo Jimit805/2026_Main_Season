@@ -6,9 +6,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import frc.robot.commands.Drivetrain.DriveCommand;
-import frc.robot.commands.Drivetrain.ResetFieldOrientedHeading;
-import frc.robot.commands.Drivetrain.RunDutyCycleCommand;
 import frc.robot.commands.Indexer.SpinStageOne;
 import frc.robot.commands.Indexer.SpinStageTwo;
 import frc.robot.commands.Intake.OscillateIntake;
@@ -17,10 +14,6 @@ import frc.robot.commands.Shooter.AlignAndShoot;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Drivetrain.Drivetrain;
-import frc.robot.subsystems.Drivetrain.RealSwerveModuleIO;
-import frc.robot.subsystems.Drivetrain.SimSwerveModuleIO;
-import frc.robot.subsystems.Drivetrain.SwerveModuleIO;
 
 public class RobotContainer {
 
@@ -30,7 +23,6 @@ public class RobotContainer {
     // Subsystems
     // ==========================
 
-    public final Drivetrain m_drivetrain;
     public final Intake m_Intake;
     public final Indexer m_Indexer;
     public final Shooter m_Shooter;
@@ -40,11 +32,7 @@ public class RobotContainer {
     // ==========================
 
     /* Drivetrain */
-    public final DriveCommand m_swerveDriveOpenLoop;
-    public final DriveCommand m_swerveDriveClosedLoop;
-    public final RunDutyCycleCommand m_driveDutyCycle;
-    public final ResetFieldOrientedHeading m_resetFieldOrientedHeading;
-    public final Command m_sysIDDriveRoutine;
+        public final Command m_sysIDDriveRoutine;
 
     /* Intake */
     public final ToggleIntake m_ToggleIntake;
@@ -65,34 +53,6 @@ public class RobotContainer {
         // Subsystems
         // ==========================
 
-        switch (Constants.ADVANTAGE_KIT_MODE) {
-            case REAL:
-                m_drivetrain = new Drivetrain(
-                        new RealSwerveModuleIO(Constants.DriveConstants.FRONT_LEFT_MODULE),
-                        new RealSwerveModuleIO(Constants.DriveConstants.FRONT_RIGHT_MODULE),
-                        new RealSwerveModuleIO(Constants.DriveConstants.BACK_RIGHT_MODULE),
-                        new RealSwerveModuleIO(Constants.DriveConstants.BACK_LEFT_MODULE));
-                break;
-            case SIM:
-                m_drivetrain = new Drivetrain(
-                        new SimSwerveModuleIO(),
-                        new SimSwerveModuleIO(),
-                        new SimSwerveModuleIO(),
-                        new SimSwerveModuleIO());
-                break;
-            default:
-                m_drivetrain = new Drivetrain(
-                        new SwerveModuleIO() {
-                        },
-                        new SwerveModuleIO() {
-                        },
-                        new SwerveModuleIO() {
-                        },
-                        new SwerveModuleIO() {
-                        });
-                break;
-        }
-
         m_Intake = new Intake();
         m_Indexer = new Indexer();
         m_Shooter = new Shooter(m_drivetrain);
@@ -102,11 +62,7 @@ public class RobotContainer {
         // ==========================
 
         /* Drivetrain */
-        m_swerveDriveOpenLoop = new DriveCommand(m_drivetrain, driverController, true);
-        m_swerveDriveClosedLoop = new DriveCommand(m_drivetrain, driverController, false);
-        m_driveDutyCycle = new RunDutyCycleCommand(m_drivetrain, 0.10, 0);
-        m_resetFieldOrientedHeading = new ResetFieldOrientedHeading(m_drivetrain);
-        m_sysIDDriveRoutine = new DeferredCommand(m_drivetrain::getSysIDDriveRoutine, Set.of(m_drivetrain));
+        
 
         /* Intake */
         m_ToggleIntake = new ToggleIntake(m_Intake, m_Indexer);
@@ -123,13 +79,11 @@ public class RobotContainer {
 
         configureBindings();
 
-        m_drivetrain.setDefaultCommand(m_swerveDriveClosedLoop);
     }
 
     private void configureBindings() {
 
         /* Drivetrain */
-        Buttons.controller1_minusButton.onTrue(m_resetFieldOrientedHeading);
 
         // Intake Toggle
         Buttons.controller1_LeftTrigger.onTrue(m_ToggleIntake);

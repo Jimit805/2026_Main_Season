@@ -81,8 +81,8 @@ public class Drivetrain extends SubsystemBase {
         gyroYawVelocitySignal = m_gyro.getAngularVelocityZWorld();
 
         resetModulesToAbsolute();
-        while (!m_gyro.isConnected()) {
-        }
+        
+        while (!m_gyro.isConnected()) {}
         m_gyro.reset();
 
         m_field2d = new Field2d();
@@ -122,11 +122,11 @@ public class Drivetrain extends SubsystemBase {
                         log -> {
                             for (SwerveModule mod : swerveMods) {
                                 log.motor("Drive Motor " + mod.moduleNumber)
-                                        .voltage(Units.Volts.of(mod.getDriveVoltage()))
-                                        .linearPosition(Units.Meters.of(mod.getPosition().distanceMeters))
-                                        .linearVelocity(Units.MetersPerSecond.of(mod.getState().speedMetersPerSecond))
-                                        .linearAcceleration(
-                                                Units.MetersPerSecondPerSecond.of(mod.getDriveAcceleration()));
+                                    .voltage(Units.Volts.of(mod.getDriveVoltage()))
+                                    .linearPosition(Units.Meters.of(mod.getPosition().distanceMeters))
+                                    .linearVelocity(Units.MetersPerSecond.of(mod.getState().speedMetersPerSecond))
+                                    .linearAcceleration(
+                                        Units.MetersPerSecondPerSecond.of(mod.getDriveAcceleration()));
                             }
                         },
                         this));

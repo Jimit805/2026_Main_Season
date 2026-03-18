@@ -153,8 +153,7 @@ public class RealSwerveModuleIO implements SwerveModuleIO {
 
     @Override
     public void setAnglePosition(double degrees) {
-        // SensorToMechanismRatio applied, so position is in mechanism rotations
-        turnPositionRequest.Position = degrees / 360.0;
+        turnPositionRequest.Position = Conversions.degreesToTalon(degrees, Constants.DriveConstants.ANGLE_GEAR_RATIO);
         turnMotor.setControl(turnPositionRequest);
     }
 

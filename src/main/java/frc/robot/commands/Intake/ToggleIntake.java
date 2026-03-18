@@ -7,6 +7,7 @@ package frc.robot.commands.Intake;
 import frc.robot.Constants;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class ToggleIntake extends Command {
@@ -67,6 +68,7 @@ public class ToggleIntake extends Command {
             case DONE:
                 break;
         }
+        SmartDashboard.putString("Intake Toggle State", state.name());
     }
 
     // Called once the command ends or is interrupted.

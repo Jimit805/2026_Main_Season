@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -69,12 +70,12 @@ public class Intake extends frc.slicelibs.TalonFXPositionalSubsystem {
     }
 
     public boolean isStowed() {
-        return (getExtenderPosition() < .127);
+        return (getExtenderPosition() < Units.inchesToMeters(5.0));
     } // 5" bumper tolerance
 
     public boolean isDeployed() {
-        return (getExtenderPosition() > Constants.IntakeConstants.DEPLOYED_POSITION - 0.0127);
-    } // 0.5" tolerance
+        return (getExtenderPosition() > Constants.IntakeConstants.DEPLOYED_POSITION - Units.inchesToMeters(1.0));
+    } // 1.0" tolerance
 
     public double getExtenderPosition() {
         return getPositions()[0];

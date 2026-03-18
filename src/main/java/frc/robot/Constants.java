@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.signals.SensorDirectionValue;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -30,13 +32,13 @@ public final class Constants {
     public static final Mode ADVANTAGE_KIT_MODE = Mode.REAL;
     public static final CTREConfigs CTRE_CONFIGS = new CTREConfigs();
 
-    public static enum Mode {
+    public enum Mode {
         REAL,
         SIM,
         REPLAY
     }
 
-    public static class IndexerConstants {
+    public final class IndexerConstants {
         /* Indexer Motor IDs */
         public static final int STAGE_ONE_MOTOR_ID = 18;
         public static final int STAGE_TWO_MOTOR_ID = 1;
@@ -48,7 +50,7 @@ public final class Constants {
         public static final int INDEXER_SUPPLY_CURRENT_LIMIT = 30;
     }
 
-    public static class DriveConstants {
+    public final class DriveConstants {
 
         /* Swerve Physics */
         public static final double TRACK_WIDTH = Units.inchesToMeters(22.0);
@@ -97,7 +99,7 @@ public final class Constants {
         public static final double DRIVE_KV = 0.12;
 
         /* Turn Motor PID */
-        public static final double TURN_KP = 55.0;
+        public static final double TURN_KP = 6.0;
         public static final double TURN_KI = 0.0;
         public static final double TURN_KD = 0.0;
 
@@ -113,7 +115,7 @@ public final class Constants {
         public static final boolean TURN_MOTOR_INVERT = false;
 
         /* CANcoder direction */
-        public static final com.ctre.phoenix6.signals.SensorDirectionValue ABSOLUTE_ENCODER_INVERT = com.ctre.phoenix6.signals.SensorDirectionValue.CounterClockwise_Positive;
+        public static final SensorDirectionValue ABSOLUTE_ENCODER_INVERT = SensorDirectionValue.CounterClockwise_Positive;
 
         /* Velocity limits */
         public static final double MAX_LINEAR_VELOCITY = 4.5; // m/s
@@ -144,13 +146,13 @@ public final class Constants {
 
     }
 
-    public static final class OIConstants {
+    public final class OIConstants {
         public static final int kDriverControllerPort = 0;
         public static final int kOperatorControllerPort = 1;
         public static final double kDriveDeadband = 0.025;
     }
 
-    public static class AlignTargets {
+    public final class AlignTargets {
         // Approximate hub positions (center), need to confirm actual field positions
         public static final Translation2d BLUE_HUB = new Translation2d(4.625, 4.034);
         public static final Translation2d RED_HUB = new Translation2d(11.915, 4.034);
@@ -168,7 +170,7 @@ public final class Constants {
         public static final double HEADING_TOLERANCE_DEG = 2.0;
     }
 
-    public static class IntakeConstants {
+    public final class IntakeConstants {
 
         public static final int ROTATION_MOTOR_ID = 6;
         public static final int EXTENDER_MOTOR_ID = 5;
@@ -181,7 +183,7 @@ public final class Constants {
         public static final double EXTENDER_RATIO = 50.0 / 9.0; // 5.55 repeating
         public static final int EXTENDER_STATOR_CURRENT_LIMIT = 60;
         public static final int EXTENDER_SUPPLY_CURRENT_LIMIT = 40;
-        public static final double POSITION_CONVERSION_FACTOR = (Units.inchesToMeters(1.0) * Math.PI) * EXTENDER_RATIO;
+        public static final double POSITION_CONVERSION_FACTOR = (Units.inchesToMeters(1.0) * Math.PI)  / EXTENDER_RATIO;
         public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR; // meters per second
 
         public static final double STOWED_POSITION = Units.inchesToMeters(0.0);
@@ -196,7 +198,7 @@ public final class Constants {
         public static final int ROLLER_SUPPLY_CURRENT_LIMIT = 30;
     }
 
-    public static class ShooterConstants {
+    public final class ShooterConstants {
 
         public static final int PIVOT_MOTOR_ID = 4;
         public static final int LEFT_SHOOTER_MOTOR_ID = 3;
@@ -260,7 +262,7 @@ public final class Constants {
         public static final double LIMELIGHT_HEIGHT = 1.525; // Feet
     }
 
-    public static class FieldConstants {
+    public final class FieldConstants {
         /*
          * public static final Translation2d BLUE_HUB = new Translation2d(4.62534,
          * 4.03479); // TODO: Check the hubs (in metres)

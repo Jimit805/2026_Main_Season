@@ -11,7 +11,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -141,7 +140,7 @@ public class TalonFXPositionalSubsystem extends SubsystemBase {
      * Sets the target position of the subsystem, which it will approach using its
      * internal PID controller.
      * 
-     * @param velocity a value in the units defined by the positionConversionFactor
+     * @param position a value in the units defined by the positionConversionFactor
      */
     public void setPosition(double position) {
         PositionVoltage request = new PositionVoltage(0).withSlot(0).withEnableFOC(true);
