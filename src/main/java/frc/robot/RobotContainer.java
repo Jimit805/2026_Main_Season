@@ -5,6 +5,7 @@ import java.util.Set;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.Drivetrain.DriveCommand;
 import frc.robot.commands.Drivetrain.ResetFieldOrientedHeading;
 import frc.robot.commands.Drivetrain.RunDutyCycleCommand;
@@ -94,7 +95,7 @@ public class RobotContainer {
 
         m_Intake = new Intake();
         m_Indexer = new Indexer();
-        m_Shooter = new Shooter();
+        m_Shooter = new Shooter(m_drivetrain);
 
         // ==========================
         // Commands
@@ -116,9 +117,9 @@ public class RobotContainer {
         m_spinStageTwo = new SpinStageTwo(m_Indexer, 0.2);
 
         /* Shooter */
-        m_alignAndShootHub = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.HUB);
-        m_alignAndPassLeft = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_LEFT);
-        m_alignAndPassRight = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_RIGHT);
+        m_alignAndShootHub = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.HUB, driverController);
+        m_alignAndPassLeft = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_LEFT, driverController);
+        m_alignAndPassRight = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_RIGHT, driverController);
 
         configureBindings();
 
@@ -127,26 +128,18 @@ public class RobotContainer {
 
     private void configureBindings() {
 
-        // ================
-        // Driver Controls
-        // ================
-
         /* Drivetrain */
-        // Buttons.controller1_YButton.onTrue(m_sysIDDriveRoutine);
         Buttons.controller1_minusButton.onTrue(m_resetFieldOrientedHeading);
 
-        /* Shooter */
-        Buttons.controller1_RightTrigger.whileTrue(m_alignAndShootHub);
+        // Intake Toggle
+        Buttons.controller1_LeftTrigger.onTrue(m_ToggleIntake);
+
+        // Hub Shooting
+        Buttons.controller1_RightTrigger.whileTrue(new ParallelCommandGroup(m_alignAndShootHub, m_OscillateIntake));
+
+        // Passing
         Buttons.controller1_rightBumper.whileTrue(m_alignAndPassLeft);
         Buttons.controller1_leftBumper.whileTrue(m_alignAndPassRight);
-
-        /* Intake */
-        Buttons.controller1_LeftTrigger.onTrue(m_ToggleIntake);
-        Buttons.controller1_RightTrigger.whileTrue(m_OscillateIntake);
-
-        // ==================
-        // Operator Controls
-        // ==================
 
     }
 

@@ -13,21 +13,32 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants.FullShooterParams;
+import frc.robot.subsystems.Drivetrain.Drivetrain;
 import frc.slicelibs.TalonFXPositionalSubsystem;
 
 public class Shooter extends TalonFXPositionalSubsystem {
 
+    private final Drivetrain m_drivetrain;
     private TalonFX leftShooterMotor, rightShooterMotor;
+    private Follower rightFollowerRequest;
+    private final VelocityVoltage flywheelVelocityRequest = new VelocityVoltage(0).withEnableFOC(true);
+
+    // Tuning fields
+    private boolean tuningMode = false;
+    private double tunedRPM = 3000.0;
+    private double tunedHoodAngle = 20.0;
 
     private double targetSpeed, targetPosition;
 
-    /** Creates a new Shooter. */
-    public Shooter() {
-
+    /** Creates a new Shooter. */ // Parameter drivetrain is required to find robot velocity for SWIM calculations
+    public Shooter(Drivetrain drivetrain) {
         super(new int[] { Constants.ShooterConstants.PIVOT_MOTOR_ID },
                 new boolean[] { true },
                 Constants.ShooterConstants.AIM_KP,
@@ -40,6 +51,11 @@ public class Shooter extends TalonFXPositionalSubsystem {
                 Constants.ShooterConstants.VELOCITY_CONVERSION_FACTOR,
                 Constants.CTRE_CONFIGS.pivotConfigs);
         setEncoderPosition(Constants.ShooterConstants.SHOOTER_STOW); // 12 degree from ground stow angle
+        
+        // Tuning mode defaults
+        SmartDashboard.putBoolean("Shooter/TuningMode", false);
+        SmartDashboard.putNumber("Shooter/TunedRPM", 3000.0);
+        SmartDashboard.putNumber("Shooter/TunedHoodAngle", 20.0);
 
         // Define the motors for spinning the flywheels.
         leftShooterMotor = new TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_MOTOR_ID);
@@ -48,12 +64,16 @@ public class Shooter extends TalonFXPositionalSubsystem {
         // Set the motor configs.
         leftShooterMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.shooterConfigs);
         rightShooterMotor.getConfigurator().apply(Constants.CTRE_CONFIGS.shooterConfigs);
+        rightFollowerRequest = new Follower(leftShooterMotor.getDeviceID(), MotorAlignmentValue.Opposed);
+
+        m_drivetrain = drivetrain;
+
     }
 
     // Set flywheels to a specific speed
     public void spinFlywheels(double targetRPM) {
-        leftShooterMotor.setControl(new VelocityVoltage(targetRPM / 60.0).withEnableFOC(true));
-        rightShooterMotor.setControl(new Follower(leftShooterMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        leftShooterMotor.setControl(flywheelVelocityRequest.withVelocity(targetRPM / 60.0));
+        rightShooterMotor.setControl(rightFollowerRequest);
     }
 
     // Move shooter hood to a position
@@ -61,36 +81,43 @@ public class Shooter extends TalonFXPositionalSubsystem {
         setPosition(angle);
     }
 
-    public double getHorizontalVelocity(double distance) {
+    public double getHorizontalVelocity(double distance, Translation2d target) {
         FullShooterParams params = Constants.ShooterConstants.SHOOTER_MAP.get(distance);
-        return distance / params.tof();
+        double baselineHorizVel = distance / params.tof();
+
+        // Project robot's field-relative velocity onto the robot to target vector
+        ChassisSpeeds fieldSpeeds = m_drivetrain.getFieldRelativeSpeeds();
+        Translation2d toTarget = target.minus(m_drivetrain.getPose().getTranslation()).getNorm() > 0
+                ? target.minus(m_drivetrain.getPose().getTranslation())
+                : new Translation2d(1, 0);
+        Translation2d unitVec = toTarget.div(toTarget.getNorm());
+        double robotVelAlongTarget = fieldSpeeds.vxMetersPerSecond * unitVec.getX()
+                + fieldSpeeds.vyMetersPerSecond * unitVec.getY();
+
+        // Moving toward target means ball needs less velocity
+        return baselineHorizVel - robotVelAlongTarget;
     }
 
     public void calculateShot(double distance, double requiredVelocity) {
         FullShooterParams baseline = Constants.ShooterConstants.SHOOTER_MAP.get(distance);
         double baselineVelocity = distance / baseline.tof();
-        double velocityRatio = requiredVelocity / baselineVelocity;
 
-        // Split the correction: sqrt gives equal "contribution" from each
-        double rpmFactor = Math.sqrt(velocityRatio);
-        double hoodFactor = Math.sqrt(velocityRatio);
+        // Clamp ratio so we never get NaN or nonsensical values
+        double velocityRatio = MathUtil.clamp(requiredVelocity / baselineVelocity, 0.5, 2.0);
 
-        // Apply RPM scaling
-        double adjustedRpm = baseline.rpm() * rpmFactor;
+        // Scale RPM proportionally — more velocity needed means more RPM
+        targetSpeed = baseline.rpm() * velocityRatio;
 
-        // Apply hood adjustment (changes horizontal component)
+        // Hood angle: derive from the total velocity vector totalVelocity =
+        // baselineHoriz / cos(hoodAngle)
         double totalVelocity = baselineVelocity / Math.cos(Math.toRadians(baseline.hoodAngle()));
-        double targetHorizFromHood = baselineVelocity * hoodFactor;
-        double ratio = MathUtil.clamp(targetHorizFromHood / totalVelocity, 0.0, 1.0);
-        double adjustedHood = Math.toDegrees(Math.acos(ratio));
-
-        targetSpeed = adjustedRpm;
-        targetPosition = adjustedHood;
+        double targetHoriz = MathUtil.clamp(requiredVelocity, 0.0, totalVelocity);
+        targetPosition = Math.toDegrees(Math.acos(targetHoriz / totalVelocity));
     }
 
     public double getFlywheelSpeed() {
         return (leftShooterMotor.getVelocity().getValueAsDouble() + rightShooterMotor.getVelocity().getValueAsDouble())
-                / 2;
+                / 2 * 60.0;
     }
 
     public double getPivotPosition() {
@@ -104,6 +131,10 @@ public class Shooter extends TalonFXPositionalSubsystem {
     public boolean atTargetPosition() {
         return Math.abs(targetPosition
                 - getPivotPosition()) <= (Constants.ShooterConstants.VERTICAL_AIM_ACCEPTABLE_ERROR * (Math.PI / 180));
+    }
+
+    public boolean isTuningMode() {
+        return tuningMode;
     }
 
     // Determines if the hub is active
@@ -231,5 +262,30 @@ public class Shooter extends TalonFXPositionalSubsystem {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
+
+        // Always publish actual state
+        SmartDashboard.putNumber("Shooter/ActualRPM", getFlywheelSpeed());
+        SmartDashboard.putNumber("Shooter/TargetRPM", targetSpeed);
+        SmartDashboard.putNumber("Shooter/TargetHoodAngle", targetPosition);
+        SmartDashboard.putNumber("Shooter/ActualHoodAngle", getPivotPosition());
+        SmartDashboard.putBoolean("Shooter/AtSpeed", atTargetSpeed());
+        SmartDashboard.putBoolean("Shooter/AtPosition", atTargetPosition());
+
+        // Tuning mode — read overrides from dashboard
+        tuningMode = SmartDashboard.getBoolean("Shooter/TuningMode", false);
+        SmartDashboard.putBoolean("Shooter/TuningMode", tuningMode);
+
+        if (tuningMode) {
+            tunedRPM = SmartDashboard.getNumber("Shooter/TunedRPM", tunedRPM);
+            tunedHoodAngle = SmartDashboard.getNumber("Shooter/TunedHoodAngle", tunedHoodAngle);
+
+            // Push defaults back so the fields appear on first run
+            SmartDashboard.putNumber("Shooter/TunedRPM", tunedRPM);
+            SmartDashboard.putNumber("Shooter/TunedHoodAngle", tunedHoodAngle);
+
+            // Override target params
+            targetSpeed = tunedRPM;
+            targetPosition = tunedHoodAngle;
+        }
     }
 }

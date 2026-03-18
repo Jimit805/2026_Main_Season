@@ -12,13 +12,14 @@ import frc.robot.subsystems.Drivetrain.Drivetrain;
 import frc.slicelibs.PolarJoystickFilter;
 import frc.slicelibs.configs.JoystickFilterConfig;
 
+@SuppressWarnings("unused")
 public class DriveCommand extends Command {
 
     private final Drivetrain m_drivetrain;
     private final XboxController m_driverController;
     private final PolarJoystickFilter translationFilter, rotationFilter;
     private final boolean m_isOpenLoop;
-    private boolean m_isFieldRelative;
+    private boolean m_isFieldRelative = true;
 
     public DriveCommand(Drivetrain drivetrain, XboxController driverController, boolean isOpenLoop) {
         addRequirements(drivetrain);

@@ -136,6 +136,8 @@ public class Drivetrain extends SubsystemBase {
         sysIDChooser.addOption("Quasistatic Reverse", sysIDDriveRoutine.quasistatic(Direction.kReverse));
         sysIDChooser.addOption("Dynamic Forward", sysIDDriveRoutine.dynamic(Direction.kForward));
         sysIDChooser.addOption("Dynamic Reverse", sysIDDriveRoutine.dynamic(Direction.kReverse));
+
+        enableContinuousHeadingInput();
     }
 
     /**
@@ -335,8 +337,6 @@ public class Drivetrain extends SubsystemBase {
         headingPID.setTolerance(Math.toRadians(Constants.AlignTargets.HEADING_TOLERANCE_DEG));
     }
 
-    // Call this in the Drivetrain constructor: enableContinuousHeadingInput();
-
     public Rotation2d getTargetHeading(Translation2d target) {
         Translation2d robotPos = getPose().getTranslation();
         return Rotation2d.fromRadians(Math.atan2(target.getY() - robotPos.getY(), target.getX() - robotPos.getX()));
@@ -414,5 +414,10 @@ public class Drivetrain extends SubsystemBase {
 
         Logger.recordOutput("Drivetrain/Current Command",
                 getCurrentCommand() == null ? "Nothing" : getCurrentCommand().getName());
+
+        SmartDashboard.putNumber("Drivetrain/DistanceToHub",
+                getDistanceTo(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue
+                        ? Constants.AlignTargets.BLUE_HUB
+                        : Constants.AlignTargets.RED_HUB));
     }
 }
