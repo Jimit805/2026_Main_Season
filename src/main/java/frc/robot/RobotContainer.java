@@ -12,7 +12,7 @@ import frc.robot.commands.Indexer.SpinStageOne;
 import frc.robot.commands.Indexer.SpinStageTwo;
 import frc.robot.commands.Intake.OscillateIntake;
 import frc.robot.commands.Intake.ToggleIntake;
-import frc.robot.commands.Shooter.ShootAtHub;
+import frc.robot.commands.Shooter.AlignAndShoot;
 import frc.robot.subsystems.Indexer;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -54,7 +54,9 @@ public class RobotContainer {
     public final SpinStageTwo m_spinStageTwo;
 
     /* Shooter */
-    public final ShootAtHub m_ShootAtHub;
+    public final AlignAndShoot m_alignAndShootHub;
+    public final AlignAndShoot m_alignAndPassLeft;
+    public final AlignAndShoot m_alignAndPassRight;
 
     public RobotContainer() {
 
@@ -114,7 +116,9 @@ public class RobotContainer {
         m_spinStageTwo = new SpinStageTwo(m_Indexer, 0.2);
 
         /* Shooter */
-        m_ShootAtHub = new ShootAtHub(m_Shooter, m_Indexer);
+        m_alignAndShootHub = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.HUB);
+        m_alignAndPassLeft = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_LEFT);
+        m_alignAndPassRight = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_RIGHT);
 
         configureBindings();
 
@@ -132,10 +136,12 @@ public class RobotContainer {
         Buttons.controller1_minusButton.onTrue(m_resetFieldOrientedHeading);
 
         /* Shooter */
-        Buttons.controller1_RightTrigger.whileTrue(m_ShootAtHub);
+        Buttons.controller1_RightTrigger.whileTrue(m_alignAndShootHub);
+        Buttons.controller1_rightBumper.whileTrue(m_alignAndPassLeft);
+        Buttons.controller1_leftBumper.whileTrue(m_alignAndPassRight);
 
         /* Intake */
-        Buttons.controller1_leftBumper.onTrue(m_ToggleIntake);
+        Buttons.controller1_LeftTrigger.onTrue(m_ToggleIntake);
         Buttons.controller1_RightTrigger.whileTrue(m_OscillateIntake);
 
         // ==================

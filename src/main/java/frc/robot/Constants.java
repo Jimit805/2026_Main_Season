@@ -150,6 +150,24 @@ public final class Constants {
         public static final double kDriveDeadband = 0.025;
     }
 
+    public static class AlignTargets {
+        // Approximate hub positions (center), need to confirm actual field positions
+        public static final Translation2d BLUE_HUB = new Translation2d(4.625, 4.034);
+        public static final Translation2d RED_HUB = new Translation2d(11.915, 4.034);
+
+        // Preset passing positions — tune these to your actual field spots
+        public static final Translation2d BLUE_PASS_LEFT = new Translation2d(3.0, 6.5);
+        public static final Translation2d BLUE_PASS_RIGHT = new Translation2d(3.0, 1.5);
+        public static final Translation2d RED_PASS_LEFT = new Translation2d(13.5, 6.5);
+        public static final Translation2d RED_PASS_RIGHT = new Translation2d(13.5, 1.5);
+
+        // Heading PID
+        public static final double HEADING_KP = 6.0;
+        public static final double HEADING_KI = 0.0;
+        public static final double HEADING_KD = 0.3;
+        public static final double HEADING_TOLERANCE_DEG = 2.0;
+    }
+
     public static class IntakeConstants {
 
         public static final int ROTATION_MOTOR_ID = 6;
@@ -163,7 +181,7 @@ public final class Constants {
         public static final double EXTENDER_RATIO = 50.0 / 9.0; // 5.55 repeating
         public static final int EXTENDER_STATOR_CURRENT_LIMIT = 60;
         public static final int EXTENDER_SUPPLY_CURRENT_LIMIT = 40;
-        public static final double POSITION_CONVERSION_FACTOR = (Units.inchesToMeters(1.0) * Math.PI) * EXTENDER_RATIO; // (pitch diameter of pinion * pi) * ratio
+        public static final double POSITION_CONVERSION_FACTOR = (Units.inchesToMeters(1.0) * Math.PI) * EXTENDER_RATIO;
         public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR; // meters per second
 
         public static final double STOWED_POSITION = Units.inchesToMeters(0.0);

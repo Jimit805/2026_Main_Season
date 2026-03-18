@@ -1,31 +1,7 @@
 package frc.robot.subsystems.Drivetrain;
 
-import frc.robot.Constants;
-import frc.robot.LimelightHelpers;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.*;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.*;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -33,8 +9,38 @@ import org.littletonrobotics.junction.Logger;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.hardware.Pigeon2;
-
 import com.pathplanner.lib.util.PathPlannerLogging;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
+import frc.robot.Constants;
+import frc.robot.LimelightHelpers;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -53,6 +59,7 @@ public class Drivetrain extends SubsystemBase {
     private final StatusSignal<Angle> gyroYawSignal;
     private final StatusSignal<AngularVelocity> gyroYawVelocitySignal;
     public final Field2d m_field2d;
+    private DoubleSupplier rotationOverride = null;
 
     private Rotation2d fieldOrientedOffset;
     private Rotation2d simHeading = new Rotation2d();
@@ -131,21 +138,6 @@ public class Drivetrain extends SubsystemBase {
         sysIDChooser.addOption("Dynamic Reverse", sysIDDriveRoutine.dynamic(Direction.kReverse));
     }
 
-    @Override
-    public void periodic() {
-        for (SwerveModule mod : swerveMods) {
-            mod.updateInputs();
-        }
-
-        updateOdometry();
-        m_field2d.setRobotPose(getPose());
-
-        BaseStatusSignal.refreshAll(gyroYawSignal, gyroYawVelocitySignal);
-
-        Logger.recordOutput("Drivetrain/Current Command",
-                getCurrentCommand() == null ? "Nothing" : getCurrentCommand().getName());
-    }
-
     /**
      * Drive field-relative or robot-relative.
      *
@@ -156,15 +148,16 @@ public class Drivetrain extends SubsystemBase {
     public void drive(Transform2d transform, boolean isOpenLoop, boolean isFieldRelative) {
         Rotation2d rotationWithOffset = getHeading().minus(fieldOrientedOffset);
 
+        double rotRad = rotationOverride != null
+                ? rotationOverride.getAsDouble()
+                : transform.getRotation().getRadians();
+
         SwerveModuleState[] states = Constants.DriveConstants.kSwerveKinematics.toSwerveModuleStates(
                 ChassisSpeeds.discretize(
                         isFieldRelative
-                                ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                        transform.getX(), transform.getY(),
-                                        transform.getRotation().getRadians(), rotationWithOffset)
-                                : new ChassisSpeeds(
-                                        transform.getX(), transform.getY(),
-                                        transform.getRotation().getRadians()),
+                                ? ChassisSpeeds.fromFieldRelativeSpeeds(transform.getX(), transform.getY(), rotRad,
+                                        rotationWithOffset)
+                                : new ChassisSpeeds(transform.getX(), transform.getY(), rotRad),
                         0.02));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.DriveConstants.MAX_LINEAR_VELOCITY);
@@ -306,10 +299,6 @@ public class Drivetrain extends SubsystemBase {
         return m_gyro.getRoll().getValueAsDouble();
     }
 
-    public void resetHeading(Rotation2d angle) {
-        m_gyro.setYaw(angle.getMeasure());
-    }
-
     public ChassisSpeeds getChassisSpeeds() {
         return Constants.DriveConstants.kSwerveKinematics.toChassisSpeeds(getModuleStates());
     }
@@ -320,15 +309,70 @@ public class Drivetrain extends SubsystemBase {
         return Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
-    // TODO: Implement
+    public void resetHeading(Rotation2d angle) {
+        m_gyro.setYaw(angle.getMeasure());
+    }
+
+    // TODO: Autoalign
+    private final PIDController headingPID = new PIDController(
+            Constants.AlignTargets.HEADING_KP,
+            Constants.AlignTargets.HEADING_KI,
+            Constants.AlignTargets.HEADING_KD);
+
+    public Translation2d getCompensatedTarget(Translation2d realTarget) {
+        double dist = getDistanceTo(realTarget);
+        double tof = Constants.ShooterConstants.SHOOTER_MAP.get(dist).tof();
+
+        ChassisSpeeds fieldSpeeds = getFieldRelativeSpeeds();
+
+        return new Translation2d(
+                realTarget.getX() - fieldSpeeds.vxMetersPerSecond * tof,
+                realTarget.getY() - fieldSpeeds.vyMetersPerSecond * tof);
+    }
+
+    public void enableContinuousHeadingInput() {
+        headingPID.enableContinuousInput(-Math.PI, Math.PI);
+        headingPID.setTolerance(Math.toRadians(Constants.AlignTargets.HEADING_TOLERANCE_DEG));
+    }
+
+    // Call this in the Drivetrain constructor: enableContinuousHeadingInput();
+
+    public Rotation2d getTargetHeading(Translation2d target) {
+        Translation2d robotPos = getPose().getTranslation();
+        return Rotation2d.fromRadians(Math.atan2(target.getY() - robotPos.getY(), target.getX() - robotPos.getX()));
+    }
+
+    public double getHeadingPIDOutput(Translation2d target) {
+        return headingPID.calculate(getHeading().getRadians(), getTargetHeading(target).getRadians());
+    }
+
+    public boolean atTargetHeading() {
+        return headingPID.atSetpoint();
+    }
+
     public boolean atTargetPose() {
-        return false;
+        return headingPID.atSetpoint();
+    }
+
+    public double getDistanceTo(Translation2d target) {
+        return getPose().getTranslation().getDistance(target);
+    }
+
+    public ChassisSpeeds getFieldRelativeSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getHeading());
+    }
+
+    public void setRotationOverride(DoubleSupplier override) {
+        rotationOverride = override;
+    }
+
+    public void clearRotationOverride() {
+        rotationOverride = null;
     }
 
     public void runChassisSpeeds(ChassisSpeeds speeds) {
         runSetpoints(
-                Constants.DriveConstants.kSwerveKinematics.toSwerveModuleStates(
-                        ChassisSpeeds.discretize(speeds, 0.02)),
+                Constants.DriveConstants.kSwerveKinematics.toSwerveModuleStates(ChassisSpeeds.discretize(speeds, 0.02)),
                 false);
     }
 
@@ -355,5 +399,20 @@ public class Drivetrain extends SubsystemBase {
 
     public Command getSysIDDriveRoutine() {
         return sysIDChooser.getSelected();
+    }
+
+    @Override
+    public void periodic() {
+        for (SwerveModule mod : swerveMods) {
+            mod.updateInputs();
+        }
+
+        updateOdometry();
+        m_field2d.setRobotPose(getPose());
+
+        BaseStatusSignal.refreshAll(gyroYawSignal, gyroYawVelocitySignal);
+
+        Logger.recordOutput("Drivetrain/Current Command",
+                getCurrentCommand() == null ? "Nothing" : getCurrentCommand().getName());
     }
 }

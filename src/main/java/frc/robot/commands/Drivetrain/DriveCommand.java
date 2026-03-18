@@ -49,12 +49,14 @@ public class DriveCommand extends Command {
                 * Constants.DriveConstants.MAX_ANGULAR_VELOCITY;
 
         // Hold left bumper for robot-relative drive at half speed
+        /*
         m_isFieldRelative = !Buttons.controller1_leftBumper.getAsBoolean();
         if (!m_isFieldRelative) {
             translationX *= 0.5;
             translationY *= 0.5;
             rotation *= 0.5;
         }
+        */
 
         m_drivetrain.drive(new Transform2d(new Translation2d(translationX, translationY), new Rotation2d(rotation)),
                 m_isOpenLoop, m_isFieldRelative);
