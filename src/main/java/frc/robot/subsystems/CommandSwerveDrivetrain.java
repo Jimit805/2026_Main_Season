@@ -5,6 +5,12 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.config.PIDConstants;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -35,8 +41,10 @@ import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
  * CTRE-generated CommandSwerveDrivetrain extended with shooter-support helpers:
  * pose, field-relative speeds, distance/heading math, and heading PID.
  *
- * @see <a href="https://api.ctr-electronics.com/phoenix6/release/java/">Phoenix 6 API</a>
- * @see <a href="https://github.wpilib.org/allwpilib/docs/release/java/">WPILib API</a>
+ * @see <a href="https://api.ctr-electronics.com/phoenix6/release/java/">Phoenix
+ *      6 API</a>
+ * @see <a href="https://github.wpilib.org/allwpilib/docs/release/java/">WPILib
+ *      API</a>
  */
 @SuppressWarnings("unused")
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
@@ -52,29 +60,28 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveSteerGains m_steerCharacterization = new SwerveRequest.SysIdSwerveSteerGains();
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
 
+    private final SwerveRequest.ApplyRobotSpeeds autoRequest = new SwerveRequest.ApplyRobotSpeeds();
+
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
-        new SysIdRoutine.Config(null, Volts.of(4), null,
-            state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
-        new SysIdRoutine.Mechanism(
-            output -> setControl(m_translationCharacterization.withVolts(output)), null, this)
-    );
+            new SysIdRoutine.Config(null, Volts.of(4), null,
+                    state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    output -> setControl(m_translationCharacterization.withVolts(output)), null, this));
 
     private final SysIdRoutine m_sysIdRoutineSteer = new SysIdRoutine(
-        new SysIdRoutine.Config(null, Volts.of(7), null,
-            state -> SignalLogger.writeString("SysIdSteer_State", state.toString())),
-        new SysIdRoutine.Mechanism(
-            volts -> setControl(m_steerCharacterization.withVolts(volts)), null, this)
-    );
+            new SysIdRoutine.Config(null, Volts.of(7), null,
+                    state -> SignalLogger.writeString("SysIdSteer_State", state.toString())),
+            new SysIdRoutine.Mechanism(
+                    volts -> setControl(m_steerCharacterization.withVolts(volts)), null, this));
 
     private final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
-        new SysIdRoutine.Config(
-            Volts.of(Math.PI / 6).per(Second), Volts.of(Math.PI), null,
-            state -> SignalLogger.writeString("SysIdRotation_State", state.toString())),
-        new SysIdRoutine.Mechanism(output -> {
-            setControl(m_rotationCharacterization.withRotationalRate(output.in(Volts)));
-            SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
-        }, null, this)
-    );
+            new SysIdRoutine.Config(
+                    Volts.of(Math.PI / 6).per(Second), Volts.of(Math.PI), null,
+                    state -> SignalLogger.writeString("SysIdRotation_State", state.toString())),
+            new SysIdRoutine.Mechanism(output -> {
+                setControl(m_rotationCharacterization.withRotationalRate(output.in(Volts)));
+                SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
+            }, null, this));
 
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
@@ -84,23 +91,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             Constants.AlignTargets.HEADING_KI,
             Constants.AlignTargets.HEADING_KD);
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants,
+            SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, modules);
         configHeadingPID();
-        if (Utils.isSimulation()) startSimThread();
+        configureAutoBuilder();
+        if (Utils.isSimulation())
+            startSimThread();
     }
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency, SwerveModuleConstants<?, ?, ?>... modules) {
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency,
+            SwerveModuleConstants<?, ?, ?>... modules) {
         super(drivetrainConstants, odometryUpdateFrequency, modules);
         configHeadingPID();
-        if (Utils.isSimulation()) startSimThread();
+        configureAutoBuilder();
+        if (Utils.isSimulation())
+            startSimThread();
     }
 
-    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency, Matrix<N3, N1> odometryStandardDeviation,
-        Matrix<N3, N1> visionStandardDeviation, SwerveModuleConstants<?, ?, ?>... modules) {
-        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation, modules);
+    public CommandSwerveDrivetrain(SwerveDrivetrainConstants drivetrainConstants, double odometryUpdateFrequency,
+            Matrix<N3, N1> odometryStandardDeviation,
+            Matrix<N3, N1> visionStandardDeviation, SwerveModuleConstants<?, ?, ?>... modules) {
+        super(drivetrainConstants, odometryUpdateFrequency, odometryStandardDeviation, visionStandardDeviation,
+                modules);
         configHeadingPID();
-        if (Utils.isSimulation()) startSimThread();
+        configureAutoBuilder();
+        if (Utils.isSimulation())
+            startSimThread();
     }
 
     private void configHeadingPID() {
@@ -108,16 +125,39 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         headingPID.setTolerance(Math.toRadians(Constants.AlignTargets.HEADING_TOLERANCE_DEG));
     }
 
+    private void configureAutoBuilder() {
+    try {
+        RobotConfig config = RobotConfig.fromGUISettings();
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetPose,
+            this::getChassisSpeeds,
+            (speeds, feedforwards) -> setControl(autoRequest.withSpeeds(speeds)),
+            new PPHolonomicDriveController(
+                new PIDConstants(5.0, 0, 0),
+                new PIDConstants(5.0, 0, 0)
+            ),
+            config,
+            () -> DriverStation.getAlliance().orElse(Alliance.Red) == Alliance.Red,
+            this
+        );
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
     // -------------------------------------------------------------------------
     // Core drivetrain commands
     // -------------------------------------------------------------------------
 
     /**
-     * Returns a command that applies the specified {@link SwerveRequest} to this drivetrain.
+     * Returns a command that applies the specified {@link SwerveRequest} to this
+     * drivetrain.
      *
      * @param request supplier of the request to apply
      * @return command to run
-     * @see <a href="https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/swerve/SwerveRequest.html">SwerveRequest</a>
+     * @see <a href=
+     *      "https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/swerve/SwerveRequest.html">SwerveRequest</a>
      */
     public Command applyRequest(Supplier<SwerveRequest> request) {
         return run(() -> this.setControl(request.get()));
@@ -145,25 +185,30 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * Returns the current estimated robot pose from the CTRE pose estimator.
      *
      * @return {@link Pose2d} in WPILib blue-origin field coordinates
-     * @see <a href="https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/swerve/SwerveDrivetrain.html#getState()">SwerveDrivetrain.getState()</a>
+     * @see <a href=
+     *      "https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/swerve/SwerveDrivetrain.html#getState()">SwerveDrivetrain.getState()</a>
      */
     public Pose2d getPose() {
         return getState().Pose;
     }
 
     /**
-     * Returns the robot-relative {@link ChassisSpeeds} from the current drive state.
+     * Returns the robot-relative {@link ChassisSpeeds} from the current drive
+     * state.
      *
-     * @see <a href="https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/swerve/SwerveDrivetrain.SwerveDriveState.html">SwerveDriveState.Speeds</a>
+     * @see <a href=
+     *      "https://api.ctr-electronics.com/phoenix6/release/java/com/ctre/phoenix6/swerve/SwerveDrivetrain.SwerveDriveState.html">SwerveDriveState.Speeds</a>
      */
     public ChassisSpeeds getChassisSpeeds() {
         return getState().Speeds;
     }
 
     /**
-     * Returns field-relative {@link ChassisSpeeds} by rotating robot-relative speeds by the current heading.
+     * Returns field-relative {@link ChassisSpeeds} by rotating robot-relative
+     * speeds by the current heading.
      *
-     * @see <a href="https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/kinematics/ChassisSpeeds.html#fromRobotRelativeSpeeds(edu.wpi.first.math.kinematics.ChassisSpeeds,edu.wpi.first.math.geometry.Rotation2d)">ChassisSpeeds.fromRobotRelativeSpeeds</a>
+     * @see <a href=
+     *      "https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/kinematics/ChassisSpeeds.html#fromRobotRelativeSpeeds(edu.wpi.first.math.kinematics.ChassisSpeeds,edu.wpi.first.math.geometry.Rotation2d)">ChassisSpeeds.fromRobotRelativeSpeeds</a>
      */
     public ChassisSpeeds getFieldRelativeSpeeds() {
         return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getPose().getRotation());
@@ -226,15 +271,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     @Override
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
-        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds),
+                visionMeasurementStdDevs);
     }
 
     @Override
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
-
 
     // Simulation
     private void startSimThread() {
@@ -248,11 +294,21 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
+    public void resetPose(Pose2d pose) {
+        try {
+            resetRotation(pose.getRotation());
+            seedFieldCentric();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void periodic() {
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
-                setOperatorPerspectiveForward(allianceColor == Alliance.Red ? kRedAlliancePerspectiveRotation : kBlueAlliancePerspectiveRotation);
+                setOperatorPerspectiveForward(allianceColor == Alliance.Red ? kRedAlliancePerspectiveRotation
+                        : kBlueAlliancePerspectiveRotation);
                 m_hasAppliedOperatorPerspective = true;
             });
         }

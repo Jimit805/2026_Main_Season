@@ -5,6 +5,11 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,6 +45,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    private final SendableChooser<Command> autoChooser;
 
     // ==========================
     // Subsystems
@@ -79,32 +85,33 @@ public class RobotContainer {
         m_alignAndPassLeft = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_LEFT, driverController);
         m_alignAndPassRight = new AlignAndShoot(m_Shooter, m_Indexer, m_drivetrain, AlignAndShoot.Target.PASS_RIGHT, driverController);
 
+        NamedCommands.registerCommand("DeployIntake", m_ToggleIntake);
+        NamedCommands.registerCommand("Shoot", new ParallelCommandGroup(m_alignAndShootHub, m_OscillateIntake));
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         configureBindings();
     }
 
     private void configureBindings() {
         // Default drive command — left stick translates, right stick X rotates
         m_drivetrain.setDefaultCommand(
-            m_drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driverController.getLeftY() * MaxSpeed)
-                     .withVelocityY(-driverController.getLeftX() * MaxSpeed)
-                     .withRotationalRate(-driverController.getRightX() * MaxAngularRate)
-            )
-        );
+                m_drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed)
+                        .withVelocityY(-driverController.getLeftX() * MaxSpeed)
+                        .withRotationalRate(-driverController.getRightX() * MaxAngularRate)));
 
         // Hold neutral mode while disabled
         RobotModeTriggers.disabled().whileTrue(
-            m_drivetrain.applyRequest(() -> new SwerveRequest.Idle()).ignoringDisable(true)
-        );
+                m_drivetrain.applyRequest(() -> new SwerveRequest.Idle()).ignoringDisable(true));
 
         // Reset field-centric heading
         Buttons.controller1_minusButton.onTrue(m_drivetrain.runOnce(m_drivetrain::seedFieldCentric));
 
         // SysId (back + start combos)
-        //Buttons.controller1_AButton.whileTrue(m_drivetrain.sysIdDynamic(Direction.kForward));
-        //Buttons.controller1_BButton.whileTrue(m_drivetrain.sysIdDynamic(Direction.kReverse));
-        //Buttons.controller1_YButton.whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kForward));
-        //Buttons.controller1_XButton.whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // Buttons.controller1_AButton.whileTrue(m_drivetrain.sysIdDynamic(Direction.kForward));
+        // Buttons.controller1_BButton.whileTrue(m_drivetrain.sysIdDynamic(Direction.kReverse));
+        // Buttons.controller1_YButton.whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kForward));
+        // Buttons.controller1_XButton.whileTrue(m_drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Telemetry
         m_drivetrain.registerTelemetry(logger::telemeterize);
@@ -121,6 +128,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return null; // TODO: add autos
+        return autoChooser.getSelected();
     }
 }
