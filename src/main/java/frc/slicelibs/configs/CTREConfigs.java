@@ -1,20 +1,15 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.slicelibs.configs;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants;
 
+/**
+ * Central CTRE motor configurations for all non-drivetrain subsystems.
+ * Drivetrain motor configs are now owned by TunerConstants / CTRE swerve.
+ */
 public class CTREConfigs {
-
-    public final TalonFXConfiguration m_swerveDriveConfigs = new TalonFXConfiguration();
-    public final TalonFXConfiguration m_swerveTurnConfigs = new TalonFXConfiguration();
-    public final CANcoderConfiguration swerveCANcoderConfig = new CANcoderConfiguration();
 
     public final TalonFXConfiguration shooterConfigs = new TalonFXConfiguration();
     public final TalonFXConfiguration pivotConfigs = new TalonFXConfiguration();
@@ -25,44 +20,12 @@ public class CTREConfigs {
     public final TalonFXConfiguration indexerConfigs = new TalonFXConfiguration();
 
     public CTREConfigs() {
-        configureSwerve();
         configureShooter();
         configureIntake();
         configureIndexer();
     }
 
-    private void configureSwerve() {
-        // CANcoder config
-        swerveCANcoderConfig.MagnetSensor.SensorDirection = Constants.DriveConstants.ABSOLUTE_ENCODER_INVERT;
-        swerveCANcoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
-
-        // Drive motor config
-        m_swerveDriveConfigs.Slot0.kP = Constants.DriveConstants.DRIVE_KP;
-        m_swerveDriveConfigs.Slot0.kI = Constants.DriveConstants.DRIVE_KI;
-        m_swerveDriveConfigs.Slot0.kD = Constants.DriveConstants.DRIVE_KD;
-        m_swerveDriveConfigs.Slot0.kS = Constants.DriveConstants.DRIVE_KS;
-        m_swerveDriveConfigs.Slot0.kV = Constants.DriveConstants.DRIVE_KV;
-        m_swerveDriveConfigs.CurrentLimits.StatorCurrentLimit = Constants.DriveConstants.DRIVE_STATOR_CURRENT_LIMIT;
-        m_swerveDriveConfigs.CurrentLimits.SupplyCurrentLimit = Constants.DriveConstants.DRIVE_SUPPLY_CURRENT_LIMIT;
-        m_swerveDriveConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-        m_swerveDriveConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        m_swerveDriveConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-        // Turn motor config
-        m_swerveTurnConfigs.Slot0.kP = Constants.DriveConstants.TURN_KP;
-        m_swerveTurnConfigs.Slot0.kI = Constants.DriveConstants.TURN_KI;
-        m_swerveTurnConfigs.Slot0.kD = Constants.DriveConstants.TURN_KD;
-        m_swerveTurnConfigs.Feedback.SensorToMechanismRatio = Constants.DriveConstants.ANGLE_GEAR_RATIO;
-        m_swerveTurnConfigs.ClosedLoopGeneral.ContinuousWrap = true;
-        m_swerveTurnConfigs.CurrentLimits.StatorCurrentLimit = Constants.DriveConstants.TURN_STATOR_CURRENT_LIMIT;
-        m_swerveTurnConfigs.CurrentLimits.SupplyCurrentLimit = Constants.DriveConstants.TURN_SUPPLY_CURRENT_LIMIT;
-        m_swerveTurnConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
-        m_swerveTurnConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
-        m_swerveTurnConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    }
-
     private void configureShooter() {
-        // Flywheel motor configurations
         shooterConfigs.Slot0.kP = Constants.ShooterConstants.FLYWHEEL_KP;
         shooterConfigs.Slot0.kI = Constants.ShooterConstants.FLYWHEEL_KI;
         shooterConfigs.Slot0.kD = Constants.ShooterConstants.FLYWHEEL_KD;
@@ -75,19 +38,18 @@ public class CTREConfigs {
         shooterConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
         shooterConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        // Pivot motor configurations
         pivotConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         pivotConfigs.CurrentLimits.StatorCurrentLimit = Constants.ShooterConstants.PIVOT_STATOR_CURRENT_LIMIT;
         pivotConfigs.CurrentLimits.SupplyCurrentLimit = Constants.ShooterConstants.PIVOT_SUPPLY_CURRENT_LIMIT;
+        pivotConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+        pivotConfigs.CurrentLimits.SupplyCurrentLimitEnable = true;
     }
 
     private void configureIntake() {
-        // Extender motor configurations
         extenderConfigs.CurrentLimits.StatorCurrentLimit = Constants.IntakeConstants.EXTENDER_STATOR_CURRENT_LIMIT;
         extenderConfigs.CurrentLimits.SupplyCurrentLimit = Constants.IntakeConstants.EXTENDER_SUPPLY_CURRENT_LIMIT;
         extenderConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-        // Roller motor configurations
         rollerConfigs.Feedback.SensorToMechanismRatio = Constants.IntakeConstants.ROLLER_GEAR_RATIO;
         rollerConfigs.CurrentLimits.StatorCurrentLimit = Constants.IntakeConstants.ROLLER_STATOR_CURRENT_LIMIT;
         rollerConfigs.CurrentLimits.SupplyCurrentLimit = Constants.IntakeConstants.ROLLER_SUPPLY_CURRENT_LIMIT;
@@ -95,10 +57,8 @@ public class CTREConfigs {
     }
 
     private void configureIndexer() {
-        // Indexer motors configurations
         indexerConfigs.CurrentLimits.StatorCurrentLimit = Constants.IndexerConstants.INDEXER_STATOR_CURRENT_LIMIT;
         indexerConfigs.CurrentLimits.SupplyCurrentLimit = Constants.IndexerConstants.INDEXER_SUPPLY_CURRENT_LIMIT;
         indexerConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     }
-
 }
